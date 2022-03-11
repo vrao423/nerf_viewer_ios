@@ -18,13 +18,13 @@ class Plane {
              color: float4(1,0,0,1),
             texture: float2(0,1)),
     VertexIn(position: float3(-1,-1,0),
-           color: float4(1,0,0,1),
+           color: float4(0,1,0,1),
              texture: float2(0,0)),
     VertexIn(position: float3(1,-1,0),
            color: float4(0,0,1,1),
              texture: float2(1,0)),
     VertexIn(position: float3(1,1,0),
-           color: float4(1,0,1,1),
+             color: float4(1,0.5,1,1),
              texture: float2(1,1))
   ]
 

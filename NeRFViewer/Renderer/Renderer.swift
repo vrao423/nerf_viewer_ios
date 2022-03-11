@@ -18,7 +18,7 @@ class Renderer: NSObject {
 
   var place: Plane!
 
-  var constants = Constants()
+  var constants = FragmentConstants()
 
   init(device: MTLDevice) {
     self.device = device
@@ -85,7 +85,7 @@ extension Renderer: MTKViewDelegate {
     let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)!
     commandEncoder.setRenderPipelineState(pipelineState)
     commandEncoder.setVertexBuffer(place.vertexBuffer, offset: 0, index: 0)
-    commandEncoder.setVertexBytes(&constants, length: MemoryLayout<Constants>.stride, index: 1)
+    commandEncoder.setVertexBytes(&constants, length: MemoryLayout<FragmentConstants>.stride, index: 1)
 
     commandEncoder.drawIndexedPrimitives(type: .triangle,
                                          indexCount: place.indices.count,
