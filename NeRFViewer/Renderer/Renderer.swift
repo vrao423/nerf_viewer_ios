@@ -24,7 +24,7 @@ class Renderer: NSObject {
     self.device = device
     commandQueue = device.makeCommandQueue()
     super.init()
-    place = Plane(device: device)
+    place = Plane(device: device, imageName: "shrek")
     buildPipelineState()
   }
 
@@ -47,6 +47,10 @@ class Renderer: NSObject {
     vertexDesciptor.attributes[1].format = .float4
     vertexDesciptor.attributes[1].offset = MemoryLayout<float3>.stride
     vertexDesciptor.attributes[1].bufferIndex = 0
+
+    vertexDesciptor.attributes[2].format = .float2
+    vertexDesciptor.attributes[2].offset = MemoryLayout<float3>.stride + MemoryLayout<float4>.stride
+    vertexDesciptor.attributes[2].bufferIndex = 0
 
     vertexDesciptor.layouts[0].stride = MemoryLayout<VertexIn>.stride
 

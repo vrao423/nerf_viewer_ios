@@ -10,15 +10,22 @@ import simd
 
 class Plane {
 
+  var texture: MTLTexture?
+
+
   var vertices: [VertexIn] = [
     VertexIn(position: float3(-1,1,0),
-             color: float4(1,0,0,1)),
+             color: float4(1,0,0,1),
+            texture: float2(0,1)),
     VertexIn(position: float3(-1,-1,0),
-           color: float4(1,0,0,1)),
+           color: float4(1,0,0,1),
+             texture: float2(0,0)),
     VertexIn(position: float3(1,-1,0),
-           color: float4(0,0,1,1)),
+           color: float4(0,0,1,1),
+             texture: float2(1,0)),
     VertexIn(position: float3(1,1,0),
-           color: float4(1,0,1,1))
+           color: float4(1,0,1,1),
+             texture: float2(1,1))
   ]
 
   var indices: [UInt16] = [
@@ -31,8 +38,9 @@ class Plane {
 
   var time: Float = 0
 
-  init(device: MTLDevice) {
+  init(device: MTLDevice, imageName: String) {
     buildBuffers(device: device)
+    self.texture = setTexture(device: device, imageName: imageName)
   }
 
   private func buildBuffers(device: MTLDevice) {
@@ -44,5 +52,9 @@ class Plane {
                                     length: indices.count * MemoryLayout<UInt16>.size,
                                     options: [])
   }
+
+}
+
+extension Plane: Texturable {
 
 }

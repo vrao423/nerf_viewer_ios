@@ -10,6 +10,7 @@ import simd
 struct VertexIn {
  let position: float3
  let color: float4
+let texture: float2
 }
 
 struct VertexOut {
