@@ -43,7 +43,7 @@ struct VertexConstants {
 };
 
 struct VertexIn {
-  float4 position [[ attribute(0) ]];
+  float3 position [[ attribute(0) ]];
   float4 color [[ attribute(1) ]];
 };
 
@@ -60,7 +60,7 @@ vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
                                constant FragmentConstants &fragmentConstants [[buffer(1)]],
                                constant VertexConstants &vertexConstants [[buffer(2)]]) {
   VertexOut vertexOut;
-  vertexOut.position = vertexIn.position;
+  vertexOut.position = float4(vertexIn.position,1);
   vertexOut.position.x += fragmentConstants.animateBy;
   vertexOut.color = vertexIn.color;
   
