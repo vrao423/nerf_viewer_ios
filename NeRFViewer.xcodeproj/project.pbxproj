@@ -13,10 +13,14 @@
 		C623B87327D88C5600E027AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C623B87127D88C5600E027AE /* Main.storyboard */; };
 		C623B87527D88C5800E027AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C623B87427D88C5800E027AE /* Assets.xcassets */; };
 		C623B87827D88C5800E027AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C623B87627D88C5800E027AE /* LaunchScreen.storyboard */; };
+		C6C08A2627D9A3AE0035797B /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2527D9A3AE0035797B /* Renderer.swift */; };
+		C6C08A2827D9A5920035797B /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2727D9A5920035797B /* Shader.metal */; };
+		C6C08A2B27D9E4630035797B /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2927D9A80C0035797B /* Plane.swift */; };
+		C6D01AB727DAF3F2009D52BA /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01AB627DAF3F2009D52BA /* Types.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C623B86827D88C5600E027AE /* BrightnessShader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrightnessShader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C623B86827D88C5600E027AE /* NeRFViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeRFViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C623B86B27D88C5600E027AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C623B86D27D88C5600E027AE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C623B86F27D88C5600E027AE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -24,6 +28,10 @@
 		C623B87427D88C5800E027AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C623B87727D88C5800E027AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C623B87927D88C5800E027AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C6C08A2527D9A3AE0035797B /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		C6C08A2727D9A5920035797B /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
+		C6C08A2927D9A80C0035797B /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
+		C6D01AB627DAF3F2009D52BA /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,7 +48,7 @@
 		C623B85F27D88C5600E027AE = {
 			isa = PBXGroup;
 			children = (
-				C623B86A27D88C5600E027AE /* BrightnessShader */,
+				C623B86A27D88C5600E027AE /* NeRFViewer */,
 				C623B86927D88C5600E027AE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,31 +56,43 @@
 		C623B86927D88C5600E027AE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C623B86827D88C5600E027AE /* BrightnessShader.app */,
+				C623B86827D88C5600E027AE /* NeRFViewer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C623B86A27D88C5600E027AE /* BrightnessShader */ = {
+		C623B86A27D88C5600E027AE /* NeRFViewer */ = {
 			isa = PBXGroup;
 			children = (
+				C6D01AB827DAFE73009D52BA /* Renderer */,
 				C623B86B27D88C5600E027AE /* AppDelegate.swift */,
 				C623B86D27D88C5600E027AE /* SceneDelegate.swift */,
 				C623B86F27D88C5600E027AE /* ViewController.swift */,
+				C6C08A2927D9A80C0035797B /* Plane.swift */,
 				C623B87127D88C5600E027AE /* Main.storyboard */,
 				C623B87427D88C5800E027AE /* Assets.xcassets */,
 				C623B87627D88C5800E027AE /* LaunchScreen.storyboard */,
 				C623B87927D88C5800E027AE /* Info.plist */,
 			);
-			path = BrightnessShader;
+			path = NeRFViewer;
+			sourceTree = "<group>";
+		};
+		C6D01AB827DAFE73009D52BA /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				C6C08A2527D9A3AE0035797B /* Renderer.swift */,
+				C6C08A2727D9A5920035797B /* Shader.metal */,
+				C6D01AB627DAF3F2009D52BA /* Types.swift */,
+			);
+			path = Renderer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C623B86727D88C5600E027AE /* BrightnessShader */ = {
+		C623B86727D88C5600E027AE /* NeRFViewer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C623B87C27D88C5800E027AE /* Build configuration list for PBXNativeTarget "BrightnessShader" */;
+			buildConfigurationList = C623B87C27D88C5800E027AE /* Build configuration list for PBXNativeTarget "NeRFViewer" */;
 			buildPhases = (
 				C623B86427D88C5600E027AE /* Sources */,
 				C623B86527D88C5600E027AE /* Frameworks */,
@@ -82,9 +102,9 @@
 			);
 			dependencies = (
 			);
-			name = BrightnessShader;
+			name = NeRFViewer;
 			productName = BrightnessShader;
-			productReference = C623B86827D88C5600E027AE /* BrightnessShader.app */;
+			productReference = C623B86827D88C5600E027AE /* NeRFViewer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -102,7 +122,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C623B86327D88C5600E027AE /* Build configuration list for PBXProject "BrightnessShader" */;
+			buildConfigurationList = C623B86327D88C5600E027AE /* Build configuration list for PBXProject "NeRFViewer" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -115,7 +135,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C623B86727D88C5600E027AE /* BrightnessShader */,
+				C623B86727D88C5600E027AE /* NeRFViewer */,
 			);
 		};
 /* End PBXProject section */
@@ -139,7 +159,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C623B87027D88C5600E027AE /* ViewController.swift in Sources */,
+				C6C08A2627D9A3AE0035797B /* Renderer.swift in Sources */,
 				C623B86C27D88C5600E027AE /* AppDelegate.swift in Sources */,
+				C6D01AB727DAF3F2009D52BA /* Types.swift in Sources */,
+				C6C08A2B27D9E4630035797B /* Plane.swift in Sources */,
+				C6C08A2827D9A5920035797B /* Shader.metal in Sources */,
 				C623B86E27D88C5600E027AE /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -341,7 +365,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C623B86327D88C5600E027AE /* Build configuration list for PBXProject "BrightnessShader" */ = {
+		C623B86327D88C5600E027AE /* Build configuration list for PBXProject "NeRFViewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C623B87A27D88C5800E027AE /* Debug */,
@@ -350,7 +374,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C623B87C27D88C5800E027AE /* Build configuration list for PBXNativeTarget "BrightnessShader" */ = {
+		C623B87C27D88C5800E027AE /* Build configuration list for PBXNativeTarget "NeRFViewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C623B87D27D88C5800E027AE /* Debug */,

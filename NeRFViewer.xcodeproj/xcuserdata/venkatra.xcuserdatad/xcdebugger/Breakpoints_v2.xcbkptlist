@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "A970B001-1B2E-46DB-9A65-3A2A2505975B"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7FA762D8-DA67-4055-A6B1-0B3C14D18FD7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "BrightnessShader/Renderer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
+            landmarkName = "draw(in:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7FA762D8-DA67-4055-A6B1-0B3C14D18FD7 - dbb5c8aa689a809a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "BrightnessShader.Renderer.draw(in: __C.MTKView) -&gt; ()"
+                  moduleName = "BrightnessShader"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/venkatra/Desktop/BrightnessShader/BrightnessShader/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "69"
+                  endingLineNumber = "69"
+                  offsetFromSymbolStart = "173">
+               </Location>
+               <Location
+                  uuid = "7FA762D8-DA67-4055-A6B1-0B3C14D18FD7 - dbb5c8aa689a809a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "BrightnessShader.Renderer.draw(in: __C.MTKView) -&gt; ()"
+                  moduleName = "BrightnessShader"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/venkatra/Desktop/BrightnessShader/BrightnessShader/Renderer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "69"
+                  endingLineNumber = "69"
+                  offsetFromSymbolStart = "222">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
