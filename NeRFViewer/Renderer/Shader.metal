@@ -10,6 +10,8 @@ using namespace metal;
 
 struct FragmentConstants {
   float animateBy;
+  float bar;
+  float4 foo;
   
   // Stuff from the viewer shader. (Remeber to update the others)
   int displayMode;
@@ -28,6 +30,18 @@ struct FragmentConstants {
   float ndc_f;
 };
 
+struct NodeBuffer {
+  float4x4 modelTransform;
+  float4x4 modelViewProjectionTransform;
+  float4x4 modelViewTransform;
+  float4x4 normalTransform;
+  float2x3 boundingBox;
+};
+
+struct VertexConstants {
+  float4x4 world_T_clip;
+};
+
 struct VertexIn {
   float4 position [[ attribute(0) ]];
   float4 color [[ attribute(1) ]];
@@ -43,15 +57,20 @@ struct VertexOut {
 };
 
 vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
-                               constant FragmentConstants &constants [[buffer(1)]]) {
-    VertexOut vertexOut;
-    vertexOut.position = vertexIn.position;
-    vertexOut.position.x += constants.animateBy;
-    vertexOut.color = vertexIn.color;
+                               constant FragmentConstants &fragmentConstants [[buffer(1)]],
+                               constant VertexConstants &vertexConstants [[buffer(2)]]) {
+  VertexOut vertexOut;
+  vertexOut.position = vertexIn.position;
+  vertexOut.position.x += fragmentConstants.animateBy;
+  vertexOut.color = vertexIn.color;
+  
+  // The actual viewer stuff:
+  //float4 positionClip =
 
-    return vertexOut;
+  return vertexOut;
 }
 
-fragment half4 fragment_shader(VertexOut vertexIn [[stage_in]]) {
-    return half4(vertexIn.color);
+fragment half4 fragment_shader(VertexOut vertexOut [[stage_in]],
+                               constant FragmentConstants &fragmentConstants [[buffer(1)]]) {
+  return half4(fragmentConstants.foo);
 }
