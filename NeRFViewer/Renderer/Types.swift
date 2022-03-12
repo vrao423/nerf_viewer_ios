@@ -21,6 +21,7 @@ struct VertexOut {
 struct VertexConstants {
   let world_T_clip:float4x4 = float4x4(float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0));
 }
+
 struct FragmentConstants {
   var animateBy: Float = 0
   var bar: Float = 0;

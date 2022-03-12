@@ -12,11 +12,7 @@ class NeRFNode: SCNNode {
 
   let voxel_size: Float = 0.0024817874999999994
 
-  let ndc_f: Float = 755.644059435;
-  let ndc_w: Float = 1006.0;
-  let ndc_h: Float = 756.0;
-
-  override init() {
+  override init(objectName: String) {
     super.init()
 
     self.castsShadow = false
@@ -34,25 +30,14 @@ class NeRFNode: SCNNode {
     }
     let materialProperty = SCNMaterialProperty(contents: landscapeImage)
 
-    var fragmentConstants = FragmentConstants(animateBy: 0,
-                                              bar: 0,
-                                              foo: float4(1),
-                                              displayMode: 0,
-                                              ndc: 0,
-                                              voxelSize: voxel_size,
-                                              blockSize: 100,
-                                              nearPlane: 100,
-                                              ndc_h: ndc_h,
-                                              ndc_w: ndc_w,
-                                              ndc_f: ndc_f)
+    let dataLoader = DataLoader(name: "logo")
 
     var vertexConstants = VertexConstants()
 
-    self.geometry?.firstMaterial?.setValue(fragmentConstants.encode(), forKey: "fragmentConstants")
+    self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
     self.geometry?.firstMaterial?.setValue(vertexConstants.encode(), forKey: "vertexConstants")
 
-
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapAlpha")
+    self.geometry?.firstMaterial?.setValue(dataLoader.mapAlpha, forKey: "mapAlpha")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapColor")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapFeatures")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapIndex")
@@ -81,4 +66,8 @@ extension VertexConstants {
       }
   }
 }
+
+
+
+
 
