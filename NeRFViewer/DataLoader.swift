@@ -27,7 +27,8 @@ class DataLoader {
   let weightsOne: SCNMaterialProperty
   let weightsTwo: SCNMaterialProperty
   
-  func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int, volume_width: Int, volume_height: Int) {
+  func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int,
+                                 volume_width: Int, volume_height: Int, volume_depth: Int) {
     let slice_depth = 4;
     
     var rgbPixels:Array = Array<UInt8>()
@@ -36,7 +37,7 @@ class DataLoader {
     for i in 0..<num_slices {
       // loadPNG should return an array of bytes (uint8).
       let rgbaPath = pngName + "_00" + String(i) + ".png"
-      let rgbaPixels = loadPNG(rgbaPath)
+      let rgbaPixels = loadImage(name:rgbaPath)
       
       var rgbPixelsSlice:Array = Array<UInt8>()
       var alphaPixelsSlice:Array = Array<UInt8>()
@@ -48,14 +49,35 @@ class DataLoader {
         alphaPixelsSlice[j] = rgbaPixels[j * 4 + 3]
       }
       rgbPixels.append(contentsOf: rgbPixelsSlice)
-      rgbaPixels.append(contentsOf: alphaPixelsSlice)
+      alphaPixels.append(contentsOf: alphaPixelsSlice)
     }
-    //mapColor = make3DSCNMaterialProperty(rgbPixels)
+    let mapColor = make3DSCNMaterialProperty(rgbPixels, volume_width, volume_height, volume_depth)
     //mapAlpha = make3DSCNMaterialProperty(alphaPixels)
   }
   
-  //SCNMaterialProperty make3DSCNMaterialProperty
-
+  func make3DSCNMaterialProperty (data: Array<UInt8>, volume_width: Int,
+                                  volume_height: Int, volume_depth: Int) -> SCNMaterialProperty {
+    let textureDescriptor = MTLTextureDescriptor()
+    textureDescriptor.textureType = MTLTextureType.type3D
+    textureDescriptor.pixelFormat = MTLPixelFormat.r8Uint // Not sure...
+    textureDescriptor.width = volume_width
+    textureDescriptor.height = volume_height
+    textureDescriptor.depth = volume_depth
+    
+    let device = MTLCreateSystemDefaultDevice()
+    let buffer = device?.makeBuffer(length: data.count, options: MTLResourceOptions.storageModeShared)
+    
+    for pixelInfo in data {
+      buffer?.contents().storeBytes(of: pixelInfo, as: UInt8.self)
+    }
+    
+    let texture = buffer?.makeTexture(descriptor: textureDescriptor,offset:0, bytesPerRow: data.count)
+    
+    let materialProp = SCNMaterialProperty()
+    materialProp.contents = texture
+    
+    return materialProp
+  }
   
   init?(name: String) {
     let jsonResult:[String: Any] = readSceneParams()

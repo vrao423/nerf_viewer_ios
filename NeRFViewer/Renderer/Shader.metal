@@ -222,7 +222,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   
   // NOT SURE IF THIS IS CORRECT...
   constexpr sampler textureSampler (mag_filter::linear,
-                                    min_filter::linear);
+                                    min_filter::nearest);
 
   if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
     atlasBlockIndex = pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
