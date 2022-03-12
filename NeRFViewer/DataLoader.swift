@@ -26,7 +26,37 @@ class DataLoader {
   let weightsZero: SCNMaterialProperty
   let weightsOne: SCNMaterialProperty
   let weightsTwo: SCNMaterialProperty
+  
+  func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int, volume_width: Int, volume_height: Int) {
+    let slice_depth = 4;
+    
+    var rgbPixels:Array = Array<UInt8>()
+    var alphaPixels:Array = Array<UInt8>()
+    
+    for i in 0..<num_slices {
+      // loadPNG should return an array of bytes (uint8).
+      let rgbaPath = pngName + "_00" + String(i) + ".png"
+      let rgbaPixels = loadPNG(rgbaPath)
+      
+      var rgbPixelsSlice:Array = Array<UInt8>()
+      var alphaPixelsSlice:Array = Array<UInt8>()
+      
+      for j in 0..<volume_width * volume_height * slice_depth {
+        rgbPixelsSlice[j * 3 + 0] = rgbaPixels[j * 4 + 0]
+        rgbPixelsSlice[j * 3 + 1] = rgbaPixels[j * 4 + 1]
+        rgbPixelsSlice[j * 3 + 2] = rgbaPixels[j * 4 + 2]
+        alphaPixelsSlice[j] = rgbaPixels[j * 4 + 3]
+      }
+      rgbPixels.append(contentsOf: rgbPixelsSlice)
+      rgbaPixels.append(contentsOf: alphaPixelsSlice)
+    }
+    //mapColor = make3DSCNMaterialProperty(rgbPixels)
+    //mapAlpha = make3DSCNMaterialProperty(alphaPixels)
+  }
+  
+  //SCNMaterialProperty make3DSCNMaterialProperty
 
+  
   init?(name: String) {
 
     let path = Bundle.main.path(forResource: "lego/scene_params", ofType: "json")
