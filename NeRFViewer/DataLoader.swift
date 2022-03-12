@@ -46,7 +46,7 @@ class DataLoader {
 
     let numSlices = jsonResult["num_slices"] as! Int
 
-    for i in 0...numSlices {
+    for i in 0..<numSlices {
       loadImage(name: "lego/rgba_00\(i).png")
     }
 
