@@ -91,8 +91,8 @@ class DataLoader {
                             mipmapLevel:0,
                             slice:0,
                             withBytes:data,
-                            bytesPerRow:volume_width * pixelFormat,
-                            bytesPerImage:volume_width * volume_height * pixelFormat)
+                            bytesPerRow:volume_width * pixelFormat * MemoryLayout<UInt8>.size,
+                            bytesPerImage:volume_width * volume_height * pixelFormat * MemoryLayout<UInt8>.size)
     let materialProp = SCNMaterialProperty()
     materialProp.contents = texture
     
