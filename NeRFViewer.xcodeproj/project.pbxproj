@@ -31,7 +31,7 @@
 		C623B87727D88C5800E027AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C623B87927D88C5800E027AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C6C08A2527D9A3AE0035797B /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		C6C08A2727D9A5920035797B /* Shader_old.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader_old.metal; sourceTree = "<group>"; };
+		C6C08A2727D9A5920035797B /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
 		C6C08A2927D9A80C0035797B /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		C6D01AB627DAF3F2009D52BA /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		C6D01ABB27DB0531009D52BA /* Texturable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texturable.swift; sourceTree = "<group>"; };
@@ -87,7 +87,7 @@
 			children = (
 				C6C08A2527D9A3AE0035797B /* Renderer.swift */,
 				C6D01ABB27DB0531009D52BA /* Texturable.swift */,
-				C6C08A2727D9A5920035797B /* Shader_old.metal */,
+				C6C08A2727D9A5920035797B /* Shader.metal */,
 				C6D01B0127DC1ECD009D52BA /* SceneKit.metal */,
 				C6D01AB627DAF3F2009D52BA /* Types.swift */,
 			);
