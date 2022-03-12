@@ -11,22 +11,8 @@ final class ShaderScene: SCNScene {
   override init() {
     super.init()
     
-    let node = SCNNode()
-    node.castsShadow = false
-    node.position = SCNVector3(0, 0, 0)
-    node.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
+    let node = NeRFNode()
     rootNode.addChildNode(node)
-
-    let program = SCNProgram()
-    program.vertexFunctionName = "textureSamplerVertex"
-    program.fragmentFunctionName = "textureSamplerFragment"
-    node.geometry?.firstMaterial?.program = program
-
-    guard let landscapeImage  = UIImage(named: "shrek") else {
-      return
-    }
-    let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-    node.geometry?.firstMaterial?.setValue(materialProperty, forKey: "customTexture")
   }
 
   required init?(coder: NSCoder) {
