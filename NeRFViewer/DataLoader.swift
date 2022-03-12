@@ -20,7 +20,7 @@ class DataLoader {
   var vertexConstants: VertexConstants
 
   let mapAlpha: SCNMaterialProperty
-  let mapColor: SCNMaterialProperty
+  var mapColor: SCNMaterialProperty
   let mapFeatures: SCNMaterialProperty
   let mapIndex: SCNMaterialProperty
   let weightsZero: SCNMaterialProperty
@@ -51,11 +51,11 @@ class DataLoader {
       rgbPixels.append(contentsOf: rgbPixelsSlice)
       alphaPixels.append(contentsOf: alphaPixelsSlice)
     }
-    self.mapColor = make3DSCNMaterialProperty(data:rgbPixels, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
-    self.mapAlpha = make3DSCNMaterialProperty(data:alphaPixels, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+    self.mapColor = make3DSCNMaterialProperty(data:rgbPixels, pixelFormat:3, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+    self.mapAlpha = make3DSCNMaterialProperty(data:alphaPixels, pixelFormat:1, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
   }
   
-  func make3DSCNMaterialProperty (data: Array<UInt8>, volume_width: Int,
+  func make3DSCNMaterialProperty (data: Array<UInt8>, pixelFormat: Int, volume_width: Int,
                                   volume_height: Int, volume_depth: Int) -> SCNMaterialProperty {
     let textureDescriptor = MTLTextureDescriptor()
     textureDescriptor.textureType = MTLTextureType.type3D
@@ -65,13 +65,23 @@ class DataLoader {
     textureDescriptor.depth = volume_depth
     
     let device = MTLCreateSystemDefaultDevice()
-    let buffer = device?.makeBuffer(length: data.count, options: MTLResourceOptions.storageModeShared)
+//    let buffer = device?.makeBuffer(length: data.count, options: MTLResourceOptions.storageModeShared)
     
-    for pixelInfo in data {
-      buffer?.contents().storeBytes(of: pixelInfo, as: UInt8.self)
-    }
+//    for pixelInfo in data {
+//      buffer?.contents().storeBytes(of: pixelInfo, as: UInt8.self)
+//    }
+//
+//    let texture = buffer?.makeTexture(descriptor: textureDescriptor,offset:0, bytesPerRow: data.count)
     
-    let texture = buffer?.makeTexture(descriptor: textureDescriptor,offset:0, bytesPerRow: data.count)
+    let texture = device?.makeTexture(descriptor: textureDescriptor)
+    
+    texture?.replace(region: MTLRegionMake3D(0, 0, 0, volume_width, volume_height, volume_depth),
+                            mipmapLevel:0,
+                            slice:0,
+                            withBytes:data,
+                            bytesPerRow:volume_width * pixelFormat,
+                            bytesPerImage:volume_width * volume_height * pixelFormat)
+    
     
     let materialProp = SCNMaterialProperty()
     materialProp.contents = texture
