@@ -30,18 +30,18 @@ class DataLoader {
   func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int,
                                  volume_width: Int, volume_height: Int, volume_depth: Int) {
     let slice_depth = 4;
-    
+
     var rgbPixels:Array = Array<UInt8>()
     var alphaPixels:Array = Array<UInt8>()
-    
+
     for i in 0..<num_slices {
       // loadPNG should return an array of bytes (uint8).
       let rgbaPath = pngName + "_00" + String(i) + ".png"
       let rgbaPixels = loadImage(name:rgbaPath)
-      
+
       var rgbPixelsSlice:Array = Array<UInt8>()
       var alphaPixelsSlice:Array = Array<UInt8>()
-      
+
       for j in 0..<volume_width * volume_height * slice_depth {
         rgbPixelsSlice[j * 3 + 0] = rgbaPixels[j * 4 + 0]
         rgbPixelsSlice[j * 3 + 1] = rgbaPixels[j * 4 + 1]
@@ -54,21 +54,21 @@ class DataLoader {
     self.mapColor = make3DSCNMaterialProperty(data:rgbPixels, pixelFormat:3, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
     self.mapAlpha = make3DSCNMaterialProperty(data:alphaPixels, pixelFormat:1, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
   }
-  
+
   func loadVolumeTexturePNG(pngName: String, num_slices: Int,
                             volume_width: Int, volume_height: Int, volume_depth: Int) {
     var rgbaPixels:Array = Array<UInt8>()
-    
+
     for i in 0..<num_slices {
       // loadPNG should return an array of bytes (uint8).
       let rgbaPath = pngName + "_00" + String(i) + ".png"
       let rgbaPixelsSlice = loadImage(name:rgbaPath)
-      
+
       rgbaPixels.append(contentsOf: rgbaPixelsSlice)
     }
     self.mapFeatures = make3DSCNMaterialProperty(data:rgbaPixels, pixelFormat:4, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
   }
-  
+
   func make3DSCNMaterialProperty (data: Array<UInt8>, pixelFormat: Int, volume_width: Int,
                                   volume_height: Int, volume_depth: Int) -> SCNMaterialProperty {
     let textureDescriptor = MTLTextureDescriptor()
@@ -77,10 +77,10 @@ class DataLoader {
     textureDescriptor.width = volume_width
     textureDescriptor.height = volume_height
     textureDescriptor.depth = volume_depth
-    
+
     let device = MTLCreateSystemDefaultDevice()
 //    let buffer = device?.makeBuffer(length: data.count, options: MTLResourceOptions.storageModeShared)
-    
+
 //    for pixelInfo in data {
 //      buffer?.contents().storeBytes(of: pixelInfo, as: UInt8.self)
 //    }
@@ -95,12 +95,13 @@ class DataLoader {
                             bytesPerImage:volume_width * volume_height * pixelFormat * MemoryLayout<UInt8>.size)
     let materialProp = SCNMaterialProperty()
     materialProp.contents = texture
-    
+
     return materialProp
   }
-  
+
   init?(name: String, device: MTLDevice) {
-    let jsonResult:[String: Any] = readSceneParams()
+
+    let sceneParams:[String: Any] = readSceneParams()
 
     self.fragmentConstants = FragmentConstants(animateBy: 0,
                                                bar: 0,
