@@ -103,11 +103,32 @@ class DataLoader {
 
     let sceneParams:[String: Any] = readSceneParams()
 
+    let gridSize = float3( (sceneParams["grid_width"] as! NSNumber).floatValue,
+                           (sceneParams["grid_height"] as! NSNumber).floatValue,
+                           (sceneParams["grid_depth"] as! NSNumber).floatValue)
+
+    let atlasSize = float3( (sceneParams["grid_width"] as! NSNumber).floatValue,
+                           (sceneParams["grid_height"] as! NSNumber).floatValue,
+                           (sceneParams["grid_depth"] as! NSNumber).floatValue)
+
+    let worldspace_T_opengl = sceneParams["worldspace_T_opengl"] as! [[NSNumber]]
+    let worldspace_R_opengl = float3x3(SIMD3<Float>(worldspace_T_opengl[0][0].floatValue, worldspace_T_opengl[0][1].floatValue, worldspace_T_opengl[0][2].floatValue),
+                                       SIMD3<Float>(worldspace_T_opengl[1][0].floatValue, worldspace_T_opengl[1][1].floatValue, worldspace_T_opengl[1][2].floatValue),
+                                       SIMD3<Float>(worldspace_T_opengl[2][0].floatValue, worldspace_T_opengl[2][1].floatValue, worldspace_T_opengl[2][2].floatValue))
+
+    let minPosition =  float3( (sceneParams["min_x"] as! NSNumber).floatValue,
+                               (sceneParams["min_y"] as! NSNumber).floatValue,
+                               (sceneParams["min_z"] as! NSNumber).floatValue)
+
     self.fragmentConstants = FragmentConstants(displayMode: 0,
-                                               ndc: 0,
+                                               ndc: (sceneParams["ndc"] as! Int),
+                                               minPosition: minPosition,
+                                               gridSize: gridSize,
+                                               atlasSize: atlasSize,
                                                voxelSize: (sceneParams["voxel_size"] as! NSNumber).floatValue,
                                                blockSize: (sceneParams["block_size"] as! NSNumber).floatValue,
-                                               nearPlane: 100,
+                                               worldspace_R_opengl: worldspace_R_opengl,
+                                               nearPlane: 0.33, // 686
                                                ndc_h: ndc_h,
                                                ndc_w: ndc_w,
                                                ndc_f: ndc_f)
@@ -166,6 +187,11 @@ class DataLoader {
   //    atlasIndexTexture.wrapS = atlasIndexTexture.wrapT =
   //        atlasIndexTexture.wrapR = THREE.ClampToEdgeWrapping;
   //    atlasIndexTexture.type = THREE.UnsignedByteType;
+
+    let atlas_width = (sceneParams["atlas_width"] as! Int)
+    let atlas_height = (sceneParams["atlas_height"] as! Int)
+    let atlas_depth = (sceneParams["atlas_depth"] as! Int)
+
     let atlasIndexTextureDescriptor = MTLTextureDescriptor()
     atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
     atlasIndexTextureDescriptor.textureType = .type3D
@@ -173,6 +199,10 @@ class DataLoader {
     atlasIndexTextureDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
     atlasIndexTextureDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
     let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
+//    atlasIndexTexture!.replace(region: MTLRegionMake3D(0, 0, 0, atlas_width, atlas_height, atlas_depth),
+//                            mipmapLevel:0,
+//                            withBytes:atlasIndexImage,
+//                              bytesPerRow:atlasIndexImage.count * 4)
     self.mapIndex = SCNMaterialProperty(contents: atlasIndexTexture)
 
   //
@@ -195,7 +225,7 @@ class DataLoader {
     fullScreenPlaneDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
     let fullScreenPlane = device.makeTexture(descriptor: fullScreenPlaneDescriptor)
 
-
+    createRayMarchMaterial(sceneParams: sceneParams)
   }
 
   func createRayMarchMaterial(sceneParams: [String: Any]) -> DataLoader? {
@@ -209,22 +239,18 @@ class DataLoader {
     let grid_depth = (sceneParams["grid_depth"] as! NSNumber).floatValue
     let block_size = (sceneParams["block_size"] as! NSNumber).floatValue
     let voxel_size = (sceneParams["voxel_size"] as! NSNumber).floatValue
-    let atlas_width = (sceneParams["atlas_width"] as! NSNumber).floatValue
-    let atlas_height = (sceneParams["atlas_height"] as! NSNumber).floatValue
-    let atlas_depth = (sceneParams["atlas_depth"] as! NSNumber).floatValue
-
-    let volume_width = (sceneParams["volume_width"] as! Int)
-    let volume_height = (sceneParams["volume_height"] as! Int)
-    let volume_depth = (sceneParams["volume_depth"] as! Int)
+    let atlas_width = (sceneParams["atlas_width"] as! Int)
+    let atlas_height = (sceneParams["atlas_height"] as! Int)
+    let atlas_depth = (sceneParams["atlas_depth"] as! Int)
 
     let numSlices = sceneParams["num_slices"] as! Int
 
 
-    loadSplitVolumeTexturePNG(pngName: "feature", num_slices: numSlices,
-                                   volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+    loadSplitVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
+                                   volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
 
-    loadVolumeTexturePNG(pngName: "rgba", num_slices: numSlices,
-                              volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+    loadVolumeTexturePNG(pngName: "lego/rgba", num_slices: numSlices,
+                              volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
 
     return nil
   }

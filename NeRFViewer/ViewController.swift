@@ -17,7 +17,7 @@ class ViewController: UIViewController {
 
   var device: MTLDevice!
 
-  var renderer: Renderer!
+//  var renderer: Renderer!
 
   override func viewDidLoad() {
     super.viewDidLoad()
