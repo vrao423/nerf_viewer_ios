@@ -191,70 +191,6 @@ func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
 //  }
   let numTextures = sceneParams["num_slices"]
 
-//    // Create empty 3D textures for the loaders to incrementally fill with data.
-//    let rgbVolumeTexture = new THREE.DataTexture3D(
-//        null, gSceneParams['atlas_width'], gSceneParams['atlas_height'],
-//        gSceneParams['atlas_depth']);
-//    rgbVolumeTexture.format = THREE.RGBFormat;
-//    rgbVolumeTexture.generateMipmaps = false;
-//    rgbVolumeTexture.magFilter = rgbVolumeTexture.minFilter =
-//        THREE.LinearFilter;
-//    rgbVolumeTexture.wrapS = rgbVolumeTexture.wrapT =
-//        rgbVolumeTexture.wrapR = THREE.ClampToEdgeWrapping;
-//    rgbVolumeTexture.type = THREE.UnsignedByteType;
-
-  let rgbVolumeTextureDescriptor = MTLTextureDescriptor()
-  rgbVolumeTextureDescriptor.pixelFormat = .rgba8Uint
-  rgbVolumeTextureDescriptor.textureType = .type3D
-  rgbVolumeTextureDescriptor.width = sceneParams["atlas_width"] as! Int
-  rgbVolumeTextureDescriptor.height = sceneParams["atlas_height"] as! Int
-  rgbVolumeTextureDescriptor.depth = sceneParams["atlas_depth"] as! Int
-  let rgbVolumeTexture = device.makeTexture(descriptor: rgbVolumeTextureDescriptor)
-
-//
-//    let alphaVolumeTexture = new THREE.DataTexture3D(
-//        null, gSceneParams['atlas_width'], gSceneParams['atlas_height'],
-//        gSceneParams['atlas_depth']);
-//    alphaVolumeTexture.format = THREE.RedFormat;
-//    alphaVolumeTexture.generateMipmaps = true;
-//    alphaVolumeTexture.magFilter = THREE.LinearFilter;
-//    alphaVolumeTexture.minFilter = THREE.LinearMipmapNearestFilter;
-//    alphaVolumeTexture.wrapS = alphaVolumeTexture.wrapT =
-//        alphaVolumeTexture.wrapR = THREE.ClampToEdgeWrapping;
-//    alphaVolumeTexture.type = THREE.UnsignedByteType;
-
-  let alphaVolumeTextureDescriptor = MTLTextureDescriptor()
-  alphaVolumeTextureDescriptor.pixelFormat = .r8Uint
-  alphaVolumeTextureDescriptor.textureType = .type3D
-  alphaVolumeTextureDescriptor.width = sceneParams["atlas_width"] as! Int
-  alphaVolumeTextureDescriptor.height = sceneParams["atlas_height"] as! Int
-  alphaVolumeTextureDescriptor.depth = sceneParams["atlas_depth"] as! Int
-  let alphaVolumeTexture = device.makeTexture(descriptor: rgbVolumeTextureDescriptor)
-
-
-//    let featureVolumeTexture = null;
-//    if (!gSceneParams['diffuse']) {
-//      featureVolumeTexture = new THREE.DataTexture3D(
-//          null, gSceneParams['atlas_width'], gSceneParams['atlas_height'],
-//          gSceneParams['atlas_depth']);
-//      featureVolumeTexture.format = THREE.RGBAFormat;
-//      featureVolumeTexture.generateMipmaps = false;
-//      featureVolumeTexture.magFilter = featureVolumeTexture.minFilter =
-//          THREE.LinearFilter;
-//      featureVolumeTexture.wrapS = featureVolumeTexture.wrapT =
-//          featureVolumeTexture.wrapR = THREE.ClampToEdgeWrapping;
-//      featureVolumeTexture.type = THREE.UnsignedByteType;
-//    }
-//
-  let featureVolumeTextureDescriptor = MTLTextureDescriptor()
-  featureVolumeTextureDescriptor.pixelFormat = .rgba8Uint
-  featureVolumeTextureDescriptor.textureType = .type3D
-  featureVolumeTextureDescriptor.width = sceneParams["atlas_width"] as! Int
-  featureVolumeTextureDescriptor.height = sceneParams["atlas_height"] as! Int
-  featureVolumeTextureDescriptor.depth = sceneParams["atlas_depth"] as! Int
-  let featureVolumeTexture = device.makeTexture(descriptor: rgbVolumeTextureDescriptor)
-
-
 //    let atlasIndexTexture = new THREE.DataTexture3D(
 //        atlasIndexImage,
 //        Math.ceil(gSceneParams['grid_width'] / gSceneParams['block_size']),
@@ -273,7 +209,7 @@ func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
   atlasIndexTextureDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
   atlasIndexTextureDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
   atlasIndexTextureDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  let atlasIndexTexture = device.makeTexture(descriptor: rgbVolumeTextureDescriptor)
+  let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
 
 //
 //    let fullScreenPlane = new THREE.PlaneBufferGeometry(width, height);
