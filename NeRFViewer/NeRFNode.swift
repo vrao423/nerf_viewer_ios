@@ -16,8 +16,8 @@ class NeRFNode: SCNNode {
     self.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
 
     let program = SCNProgram()
-    program.vertexFunctionName = "textureSamplerVertex"
-    program.fragmentFunctionName = "textureSamplerFragment"
+    program.vertexFunctionName = "vertex_shader"
+    program.fragmentFunctionName = "fragment_shader"
     program.isOpaque = false
     self.geometry?.firstMaterial?.program = program
 
@@ -25,7 +25,28 @@ class NeRFNode: SCNNode {
       return
     }
     let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "customTexture")
+
+    let fragmentConstants = FragmentConstants(animateBy: 0,
+                                              bar: 0,
+                                              foo: float4(1),
+                                              displayMode: 0,
+                                              ndc: 0, voxelSize: 10,
+                                              blockSize: 100,
+                                              nearPlane: 100,
+                                              ndc_h: 100,
+                                              ndc_w: 100,
+                                              ndc_f: 100)
+
+    self.geometry?.firstMaterial?.setValue(fragmentConstants, forKey: "fragmentConstants")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapAlpha")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapColor")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapFeatures")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapIndex")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsZero")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsOne")
+    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsTwo")
+
+
   }
 
   required init?(coder: NSCoder) {
