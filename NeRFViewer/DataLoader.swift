@@ -44,6 +44,7 @@ class DataLoader {
 
     self.vertexConstants = VertexConstants()
 
+    loadImage(name: "lego/rgba_000.png")
     
     guard let landscapeImage  = UIImage(named: "shrek") else {
       return nil
@@ -66,6 +67,7 @@ class DataLoader {
     self.weightsZero = materialProperty
     self.weightsOne = materialProperty
     self.weightsTwo = materialProperty
+
   }
 }
 
@@ -74,4 +76,24 @@ func readSceneParams() -> [String : Any] {
   let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
   let jsonResult:[String: Any] = try! JSONSerialization.jsonObject(with: jsonData, options: .mutableLeaves) as! [String : Any]
   return jsonResult
+}
+
+func loadImage(name: String) -> [UInt8] {
+  let image = UIImage(named: name)!
+  var imageInts: [UInt8] = []
+  guard let cgImage = image.cgImage,
+        let data = cgImage.dataProvider?.data,
+        let bytes = CFDataGetBytePtr(data) else {
+          fatalError("Couldn't access image data")
+        }
+
+  let bytesPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
+  for y in 0 ..< cgImage.height {
+    for x in 0 ..< cgImage.width {
+      let offset = (y * cgImage.bytesPerRow) + (x * bytesPerPixel)
+      imageInts.append(contentsOf: [bytes[offset], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3]])
+    }
+  }
+
+  return imageInts
 }
