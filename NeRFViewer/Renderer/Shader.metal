@@ -1,8 +1,8 @@
 // NeRFViewer Shader.
 
 #include <metal_stdlib>
-#include <SceneKit/scn_metal>
 using namespace metal;
+#include <SceneKit/scn_metal>
 
 struct FragmentConstants {
   float animateBy;
@@ -157,7 +157,7 @@ float2 rayAabbIntersection(float3 aabbMin,float3 aabbMax,float3 origin,float3 in
 
 
 // Fragment Shader main.
-fragment half4 fragment_shader(VertexOut vertexOut [[stage_in]],
+fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
                                constant NodeBuffer& scn_node [[buffer(1)]],
                                constant FragmentConstants &fragmentConstants [[buffer(2)]],
                                texture3d<float, access::sample> mapAlpha [[texture(0)]],
@@ -208,15 +208,126 @@ fragment half4 fragment_shader(VertexOut vertexOut [[stage_in]],
   
   // Skip any rays that miss the scene bounding box.
   if (tMinMax.x > tMinMax.y) {
-      return half4(1.0, 1.0, 1.0, 1.0);
+      return float4(1.0, 1.0, 1.0, 1.0);
   }
   
-  return half4(fragmentConstants.foo);
-}
+  float t = max(nearWorld / fragmentConstants.voxelSize, tMinMax.x) + 0.5;
+  float3 posGrid = originGrid + directionGrid * t;
 
-fragment half4 texture_fragment(VertexOut vertexIn [[ stage_in ]],
-                                texture2d<float> texture [[ texture(0) ]]) {
-  constexpr sampler defaultSampler;
-  float4 color = texture.sample(defaultSampler, vertexIn.textureCoordinates);
-  return half4(color.r, color.g, color.b, 1);
+  float3 blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
+  float3 blockMax = blockMin + fragmentConstants.blockSize;
+  float2 tBlockMinMax = rayAabbIntersection(
+            blockMin, blockMax, originGrid, invDirectionGrid);
+  float3 atlasBlockIndex;
+  
+  // NOT SURE IF THIS IS CORRECT...
+  constexpr sampler textureSampler (mag_filter::linear,
+                                    min_filter::linear);
+
+  if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
+    atlasBlockIndex = pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
+  } else {
+    // Sample the texture to obtain a color
+    atlasBlockIndex = 255.0 * mapIndex.sample(textureSampler, (blockMin + blockMax) / (2.0 * float3(blockGridSize))).xyz;
+  }
+    
+    float visibility = 1.0;
+    float3 color = float3(0.0, 0.0, 0.0);
+    float4 features = float4(0.0, 0.0, 0.0, 0.0);
+    int step = 0;
+    int maxStep = int(ceil(length(fragmentConstants.gridSize)));
+    
+    while (step < maxStep && t < tMinMax.y && visibility > 1.0 / 255.0) {
+      // Skip empty macroblocks.
+      if (atlasBlockIndex.x > 254.0) {
+        t = 0.5 + tBlockMinMax.y;
+      }
+      else { // Otherwise step through them and fetch RGBA and Features.
+        float3 posAtlas = clamp(posGrid - blockMin, 0.0, fragmentConstants.blockSize);
+        posAtlas += atlasBlockIndex * (fragmentConstants.blockSize + 2.0);
+        posAtlas += 1.0; // Account for the one voxel padding in the atlas.
+
+        if (fragmentConstants.displayMode == DISPLAY_COARSE_GRID) {
+          color = atlasBlockIndex * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
+          features.rgb = atlasBlockIndex * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
+          features.a = 1.0;
+          visibility = 0.0;
+          continue;
+        }
+
+        // Do a conservative fetch for alpha!=0 at a lower resolution,
+        // and skip any voxels which are empty. First, this saves bandwidth
+        // since we only fetch one byte instead of 8 (trilinear) and most
+        // fetches hit cache due to low res. Second, this is conservative,
+        // and accounts for any possible alpha mass that the high resolution
+        // trilinear would find.
+        const int skipMipLevel = 2;
+        const float miniBlockSize = float(1 << skipMipLevel);
+
+        // Only fetch one byte at first, to conserve memory bandwidth in
+        // empty space.
+        // why uint??, not sure how to use skipMipLevel in here.
+        uint3 coord = uint3(posAtlas / miniBlockSize);
+        float atlasAlpha = mapAlpha.read(coord).x;
+
+        if (atlasAlpha > 0.0) {
+          // OK, we hit something, do a proper trilinear fetch at high res.
+          float3 atlasUvw = posAtlas / fragmentConstants.atlasSize;
+          
+          // Note: Not sure sample == textureLod(,,0).
+          atlasAlpha = mapAlpha.sample(textureSampler, atlasUvw).x;
+          
+          // Only worth fetching the content if high res alpha is non-zero.
+          if (atlasAlpha > 0.5 / 255.0) {
+            float4 atlasRgba = float4(0.0, 0.0, 0.0, atlasAlpha);
+            atlasRgba.rgb = mapColor.sample(textureSampler, atlasUvw).rgb;
+            if (fragmentConstants.displayMode != DISPLAY_DIFFUSE) {
+              float4 atlasFeatures = mapFeatures.sample(textureSampler, atlasUvw);
+              features += visibility * atlasFeatures;
+            }
+            color += visibility * atlasRgba.rgb;
+            visibility *= 1.0 - atlasRgba.a;
+          }
+        }
+        t += 1.0;
+      }
+      
+      posGrid = originGrid + directionGrid * t;
+      if (t > tBlockMinMax.y) {
+       blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
+       blockMax = blockMin + fragmentConstants.blockSize;
+       tBlockMinMax = rayAabbIntersection(
+             blockMin, blockMax, originGrid, invDirectionGrid);
+
+       if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
+         atlasBlockIndex = pancakeBlockIndex(
+           posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
+       } else {
+         atlasBlockIndex = 255.0 * mapIndex.sample(textureSampler, (blockMin + blockMax) / (2.0 * float3(blockGridSize))).xyz;
+       }
+      }
+      step++;
+    }
+
+    if (fragmentConstants.displayMode == DISPLAY_VIEW_DEPENDENT) {
+      color = float3(0.0, 0.0, 0.0) * visibility;
+    } else if (fragmentConstants.displayMode == DISPLAY_FEATURES) {
+      color = features.rgb;
+    }
+    
+    // Compute the final color, to save compute only compute view-depdence
+   // for rays that intersected something in the scene.
+   color = float3(1.0, 1.0, 1.0) * visibility + color;
+    
+    // TODO(jwkaiqi): enable the following...
+//   const float kVisibilityThreshold = 254.0 / 255.0;
+//   if (visibility <= kVisibilityThreshold &&
+//       (fragmentConstants.displayMode == DISPLAY_NORMAL ||
+//        fragmentConstants.displayMode == DISPLAY_VIEW_DEPENDENT)) {
+//     color += evaluateNetwork(
+//       color, features, worldspace_R_opengl * normalize(vDirection));
+//   }
+    return float4(color, 1.0);
+  
+  //return half4(fragmentConstants.foo);
 }
