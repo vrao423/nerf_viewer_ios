@@ -51,8 +51,8 @@ class DataLoader {
       rgbPixels.append(contentsOf: rgbPixelsSlice)
       alphaPixels.append(contentsOf: alphaPixelsSlice)
     }
-    let mapColor = make3DSCNMaterialProperty(rgbPixels, volume_width, volume_height, volume_depth)
-    //mapAlpha = make3DSCNMaterialProperty(alphaPixels)
+    self.mapColor = make3DSCNMaterialProperty(data:rgbPixels, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+    self.mapAlpha = make3DSCNMaterialProperty(data:alphaPixels, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
   }
   
   func make3DSCNMaterialProperty (data: Array<UInt8>, volume_width: Int,
