@@ -44,8 +44,12 @@ class DataLoader {
 
     self.vertexConstants = VertexConstants()
 
-    loadImage(name: "lego/rgba_000.png")
-    
+    let numSlices = jsonResult["num_slices"] as! Int
+
+    for i in 0...numSlices {
+      loadImage(name: "lego/rgba_00\(i).png")
+    }
+
     guard let landscapeImage  = UIImage(named: "shrek") else {
       return nil
     }
