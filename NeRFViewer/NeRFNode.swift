@@ -12,7 +12,11 @@ class NeRFNode: SCNNode {
 
   let voxel_size: Float = 0.0024817874999999994
 
-  override init(objectName: String) {
+  required init?(coder aDecoder: NSCoder) {
+      fatalError("init(coder:) has not been implemented")
+  }
+
+  override init() {
     super.init()
 
     self.castsShadow = false
@@ -25,29 +29,20 @@ class NeRFNode: SCNNode {
     program.isOpaque = false
     self.geometry?.firstMaterial?.program = program
 
-    guard let landscapeImage  = UIImage(named: "shrek") else {
+    guard let dataLoader = DataLoader(name: "objectName") else {
       return
     }
-    let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-
-    let dataLoader = DataLoader(name: "logo")
-
-    var vertexConstants = VertexConstants()
 
     self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
-    self.geometry?.firstMaterial?.setValue(vertexConstants.encode(), forKey: "vertexConstants")
+    self.geometry?.firstMaterial?.setValue(dataLoader.vertexConstants.encode(), forKey: "vertexConstants")
 
     self.geometry?.firstMaterial?.setValue(dataLoader.mapAlpha, forKey: "mapAlpha")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapColor")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapFeatures")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapIndex")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsZero")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsOne")
-    self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsTwo")
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.geometry?.firstMaterial?.setValue(dataLoader.mapColor, forKey: "mapColor")
+    self.geometry?.firstMaterial?.setValue(dataLoader.mapFeatures, forKey: "mapFeatures")
+    self.geometry?.firstMaterial?.setValue(dataLoader.mapIndex, forKey: "mapIndex")
+    self.geometry?.firstMaterial?.setValue(dataLoader.weightsZero, forKey: "weightsZero")
+    self.geometry?.firstMaterial?.setValue(dataLoader.weightsOne, forKey: "weightsOne")
+    self.geometry?.firstMaterial?.setValue(dataLoader.weightsTwo, forKey: "weightsTwo")
   }
 }
 
