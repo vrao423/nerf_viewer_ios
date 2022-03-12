@@ -69,7 +69,7 @@ class DataLoader {
   }
 }
 
-func readSceneParams() {
+func readSceneParams() -> [String : Any] {
   let path = Bundle.main.path(forResource: "lego/scene_params", ofType: "json")
   let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
   let jsonResult:[String: Any] = try! JSONSerialization.jsonObject(with: jsonData, options: .mutableLeaves) as! [String : Any]
