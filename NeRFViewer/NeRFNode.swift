@@ -16,7 +16,11 @@ class NeRFNode: SCNNode {
       fatalError("init(coder:) has not been implemented")
   }
 
-  override init() {
+  init(geometry: SCNGeometry?) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  init(device: MTLDevice) {
     super.init()
 
     self.castsShadow = false
@@ -29,7 +33,7 @@ class NeRFNode: SCNNode {
     program.isOpaque = false
     self.geometry?.firstMaterial?.program = program
 
-    guard let dataLoader = DataLoader(name: "objectName") else {
+    guard let dataLoader = DataLoader(name: "lego", device: device) else {
       return
     }
 

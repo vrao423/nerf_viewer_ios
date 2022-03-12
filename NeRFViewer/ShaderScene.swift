@@ -8,10 +8,9 @@
 import SceneKit
 
 final class ShaderScene: SCNScene {
-  override init() {
+  init(device: MTLDevice) {
     super.init()
-    
-    let node = NeRFNode()
+    let node = NeRFNode(device: device)
     rootNode.addChildNode(node)
   }
 

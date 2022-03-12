@@ -30,8 +30,11 @@ class ViewController: UIViewController {
 //
 //    commandQueue = device.makeCommandQueue()
 
+    // retrieve the SCNView
+    let scnView = self.view as! SCNView
+
     // create a new scene
-    let scene = ShaderScene()
+    let scene = ShaderScene(device: scnView.device!)
 
     // create and add a camera to the scene
     let cameraNode = SCNNode()
@@ -55,11 +58,12 @@ class ViewController: UIViewController {
     ambientLightNode.light!.color = UIColor.darkGray
     scene.rootNode.addChildNode(ambientLightNode)
 
-    // retrieve the SCNView
-    let scnView = self.view as! SCNView
+
 
     // set the scene to the view
     scnView.scene = scene
+
+
 
     // allows the user to manipulate the camera
     scnView.allowsCameraControl = true
