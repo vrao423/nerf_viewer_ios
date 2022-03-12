@@ -6,8 +6,16 @@
 //
 
 import SceneKit
+import Foundation
 
 class NeRFNode: SCNNode {
+
+  let voxel_size: Float = 0.0024817874999999994
+
+  let ndc_f: Float = 755.644059435;
+  let ndc_w: Float = 1006.0;
+  let ndc_h: Float = 756.0;
+
   override init() {
     super.init()
 
@@ -26,18 +34,24 @@ class NeRFNode: SCNNode {
     }
     let materialProperty = SCNMaterialProperty(contents: landscapeImage)
 
-    let fragmentConstants = FragmentConstants(animateBy: 0,
+    var fragmentConstants = FragmentConstants(animateBy: 0,
                                               bar: 0,
                                               foo: float4(1),
                                               displayMode: 0,
-                                              ndc: 0, voxelSize: 10,
+                                              ndc: 0,
+                                              voxelSize: voxel_size,
                                               blockSize: 100,
                                               nearPlane: 100,
-                                              ndc_h: 100,
-                                              ndc_w: 100,
-                                              ndc_f: 100)
+                                              ndc_h: ndc_h,
+                                              ndc_w: ndc_w,
+                                              ndc_f: ndc_f)
 
-    self.geometry?.firstMaterial?.setValue(fragmentConstants, forKey: "fragmentConstants")
+    var vertexConstants = VertexConstants()
+
+    self.geometry?.firstMaterial?.setValue(fragmentConstants.encode(), forKey: "fragmentConstants")
+    self.geometry?.firstMaterial?.setValue(vertexConstants.encode(), forKey: "vertexConstants")
+
+
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapAlpha")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapColor")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "mapFeatures")
@@ -45,11 +59,26 @@ class NeRFNode: SCNNode {
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsZero")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsOne")
     self.geometry?.firstMaterial?.setValue(materialProperty, forKey: "weightsTwo")
-
-
   }
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 }
+
+extension FragmentConstants {
+  mutating func encode() -> NSData {
+    return withUnsafePointer(to: &self) { p in
+        NSData(bytes: p, length: MemoryLayout<FragmentConstants>.stride)
+      }
+  }
+}
+
+extension VertexConstants {
+  mutating func encode() -> NSData {
+    return withUnsafePointer(to: &self) { p in
+        NSData(bytes: p, length: MemoryLayout<VertexConstants>.stride)
+      }
+  }
+}
+

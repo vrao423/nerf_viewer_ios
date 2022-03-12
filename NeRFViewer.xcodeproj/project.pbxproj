@@ -21,6 +21,7 @@
 		C6D01AE027DC1B7D009D52BA /* ShaderScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01ADF27DC1B7D009D52BA /* ShaderScene.swift */; };
 		C6D01B0427DC35AA009D52BA /* NeRFNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01B0327DC35AA009D52BA /* NeRFNode.swift */; };
 		C6D01B0527DC3B6D009D52BA /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2727D9A5920035797B /* Shader.metal */; };
+		C6D01B0727DC43AA009D52BA /* lego in Resources */ = {isa = PBXBuildFile; fileRef = C6D01B0627DC43AA009D52BA /* lego */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		C6D01ADF27DC1B7D009D52BA /* ShaderScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderScene.swift; sourceTree = "<group>"; };
 		C6D01B0127DC1ECD009D52BA /* SceneKit.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SceneKit.metal; sourceTree = "<group>"; };
 		C6D01B0327DC35AA009D52BA /* NeRFNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFNode.swift; sourceTree = "<group>"; };
+		C6D01B0627DC43AA009D52BA /* lego */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lego; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 				C623B87127D88C5600E027AE /* Main.storyboard */,
 				C623B87427D88C5800E027AE /* Assets.xcassets */,
 				C623B87627D88C5800E027AE /* LaunchScreen.storyboard */,
+				C6D01B0827DC43D1009D52BA /* objects */,
 				C623B87927D88C5800E027AE /* Info.plist */,
 			);
 			path = NeRFViewer;
@@ -105,6 +108,14 @@
 				C623B86D27D88C5600E027AE /* SceneDelegate.swift */,
 			);
 			path = "Do not change";
+			sourceTree = "<group>";
+		};
+		C6D01B0827DC43D1009D52BA /* objects */ = {
+			isa = PBXGroup;
+			children = (
+				C6D01B0627DC43AA009D52BA /* lego */,
+			);
+			path = objects;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,6 +179,7 @@
 				C623B87827D88C5800E027AE /* LaunchScreen.storyboard in Resources */,
 				C623B87527D88C5800E027AE /* Assets.xcassets in Resources */,
 				C623B87327D88C5600E027AE /* Main.storyboard in Resources */,
+				C6D01B0727DC43AA009D52BA /* lego in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
