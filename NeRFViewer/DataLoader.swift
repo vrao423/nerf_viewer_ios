@@ -28,22 +28,19 @@ class DataLoader {
   let weightsTwo: SCNMaterialProperty
 
   init?(name: String) {
-
-    let path = Bundle.main.path(forResource: "lego/scene_params", ofType: "json")
-    let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
-    let jsonResult:[String: Any] = try! JSONSerialization.jsonObject(with: jsonData, options: .mutableLeaves) as! [String : Any]
+    let jsonResult:[String: Any] = readSceneParams()
 
     self.fragmentConstants = FragmentConstants(animateBy: 0,
-                                          bar: 0,
-                                          foo: float4(1),
-                                          displayMode: 0,
-                                          ndc: 0,
+                                               bar: 0,
+                                               foo: float4(1),
+                                               displayMode: 0,
+                                               ndc: 0,
                                                voxelSize: (jsonResult["voxel_size"] as! NSNumber).floatValue,
                                                blockSize: (jsonResult["block_size"] as! NSNumber).floatValue,
-                                          nearPlane: 100,
-                                          ndc_h: ndc_h,
-                                          ndc_w: ndc_w,
-                                          ndc_f: ndc_f)
+                                               nearPlane: 100,
+                                               ndc_h: ndc_h,
+                                               ndc_w: ndc_w,
+                                               ndc_f: ndc_f)
 
     self.vertexConstants = VertexConstants()
 
@@ -70,4 +67,11 @@ class DataLoader {
     self.weightsOne = materialProperty
     self.weightsTwo = materialProperty
   }
+}
+
+func readSceneParams() {
+  let path = Bundle.main.path(forResource: "lego/scene_params", ofType: "json")
+  let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
+  let jsonResult:[String: Any] = try! JSONSerialization.jsonObject(with: jsonData, options: .mutableLeaves) as! [String : Any]
+  return jsonResult
 }
