@@ -55,16 +55,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B27F7B25-7AAF-4833-B959-C16EAF3E9125"
+            uuid = "8A34C4FA-BC9F-4EBF-9654-2139E8413971"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "NeRFViewer/DataLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
-            landmarkName = "init?(name:device:)"
+            startingLineNumber = "97"
+            endingLineNumber = "97"
+            landmarkName = "make3DSCNMaterialProperty(data:pixelFormat:volume_width:volume_height:volume_depth:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

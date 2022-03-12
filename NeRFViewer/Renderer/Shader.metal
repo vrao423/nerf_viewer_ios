@@ -5,10 +5,6 @@ using namespace metal;
 #include <SceneKit/scn_metal>
 
 struct FragmentConstants {
-  float animateBy;
-  float bar;
-  float4 foo;
-  
   // Stuff from the viewer shader.
   int displayMode;
   int ndc;

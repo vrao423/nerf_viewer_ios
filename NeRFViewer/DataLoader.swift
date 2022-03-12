@@ -19,13 +19,13 @@ class DataLoader {
   var fragmentConstants: FragmentConstants
   var vertexConstants: VertexConstants
 
-  var mapAlpha: SCNMaterialProperty
-  var mapColor: SCNMaterialProperty
-  var mapFeatures: SCNMaterialProperty
-  var mapIndex: SCNMaterialProperty
-  var weightsZero: SCNMaterialProperty
-  var weightsOne: SCNMaterialProperty
-  var weightsTwo: SCNMaterialProperty
+  var mapAlpha: SCNMaterialProperty!
+  var mapColor: SCNMaterialProperty!
+  var mapFeatures: SCNMaterialProperty!
+  var mapIndex: SCNMaterialProperty!
+  var weightsZero: SCNMaterialProperty!
+  var weightsOne: SCNMaterialProperty!
+  var weightsTwo: SCNMaterialProperty!
   
   func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int,
                                  volume_width: Int, volume_height: Int, volume_depth: Int) {
@@ -103,10 +103,7 @@ class DataLoader {
 
     let sceneParams:[String: Any] = readSceneParams()
 
-    self.fragmentConstants = FragmentConstants(animateBy: 0,
-                                               bar: 0,
-                                               foo: float4(1),
-                                               displayMode: 0,
+    self.fragmentConstants = FragmentConstants(displayMode: 0,
                                                ndc: 0,
                                                voxelSize: (sceneParams["voxel_size"] as! NSNumber).floatValue,
                                                blockSize: (sceneParams["block_size"] as! NSNumber).floatValue,
@@ -128,17 +125,108 @@ class DataLoader {
     }
     
     let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-
-    self.mapAlpha = materialProperty
-    self.mapColor = materialProperty
-    self.mapFeatures = materialProperty
-    self.mapIndex = materialProperty
     self.weightsZero = materialProperty
     self.weightsOne = materialProperty
     self.weightsTwo = materialProperty
 
     loadScene(device: device, dirUrl: "lego", width: 800, height: 600)
+  }
 
+  func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
+  //  // Reset the texture loading window.
+  //  gLoadedRGBATextures = gLoadedFeatureTextures = gNumTextures = 0;
+  //  updateLoadingProgress();
+
+    var sceneParams:[String: Any] = readSceneParams()
+    let atlasIndexImage = loadImage(name: "lego/atlas_indices.png")
+
+  //
+  //    // Start rendering ASAP, forcing THREE.js to upload the textures.
+  //    requestAnimationFrame(render);
+  //
+    sceneParams["dirUrl"] = dirUrl
+    sceneParams["loadingTextures"] = false
+    sceneParams["diffuse"] = true
+    // If we have a view-dependence network in the json file, turn on view
+    // dependence.
+  //  if ('0_bias' in gSceneParams) {
+  //    gSceneParams['diffuse'] = false;
+  //  }
+    let numTextures = sceneParams["num_slices"]
+
+  //    let atlasIndexTexture = new THREE.DataTexture3D(
+  //        atlasIndexImage,
+  //        Math.ceil(gSceneParams['grid_width'] / gSceneParams['block_size']),
+  //        Math.ceil(gSceneParams['grid_height'] / gSceneParams['block_size']),
+  //        Math.ceil(gSceneParams['grid_depth'] / gSceneParams['block_size']));
+  //    atlasIndexTexture.format = THREE.RGBAFormat;
+  //    atlasIndexTexture.generateMipmaps = false;
+  //    atlasIndexTexture.magFilter = atlasIndexTexture.minFilter =
+  //        THREE.NearestFilter;
+  //    atlasIndexTexture.wrapS = atlasIndexTexture.wrapT =
+  //        atlasIndexTexture.wrapR = THREE.ClampToEdgeWrapping;
+  //    atlasIndexTexture.type = THREE.UnsignedByteType;
+    let atlasIndexTextureDescriptor = MTLTextureDescriptor()
+    atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
+    atlasIndexTextureDescriptor.textureType = .type3D
+    atlasIndexTextureDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
+    self.mapIndex = SCNMaterialProperty(contents: atlasIndexTexture)
+
+  //
+  //    let fullScreenPlane = new THREE.PlaneBufferGeometry(width, height);
+  //    let rayMarchMaterial = createRayMarchMaterial(
+  //        gSceneParams, alphaVolumeTexture, rgbVolumeTexture,
+  //        featureVolumeTexture, atlasIndexTexture,
+  //        new THREE.Vector3(
+  //            gSceneParams['min_x'], gSceneParams['min_y'],
+  //            gSceneParams['min_z']),
+  //        gSceneParams['grid_width'], gSceneParams['grid_height'],
+  //        gSceneParams['grid_depth'], gSceneParams['block_size'],
+  //        gSceneParams['voxel_size'], gSceneParams['atlas_width'],
+  //        gSceneParams['atlas_height'], gSceneParams['atlas_depth']);
+    let fullScreenPlaneDescriptor = MTLTextureDescriptor()
+    fullScreenPlaneDescriptor.pixelFormat = .rgba8Uint
+    fullScreenPlaneDescriptor.textureType = .type3D
+    fullScreenPlaneDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    fullScreenPlaneDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    fullScreenPlaneDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    let fullScreenPlane = device.makeTexture(descriptor: fullScreenPlaneDescriptor)
+
+
+  }
+
+  func createRayMarchMaterial(sceneParams: [String: Any]) -> DataLoader? {
+
+    let minPosition: float3 = float3((sceneParams["min_x"] as! NSNumber).floatValue,
+                                     (sceneParams["min_y"] as! NSNumber).floatValue,
+                                     (sceneParams["min_z"] as! NSNumber).floatValue)
+
+    let gridWidth = (sceneParams["grid_width"] as! NSNumber).floatValue
+    let grid_height = (sceneParams["grid_height"] as! NSNumber).floatValue
+    let grid_depth = (sceneParams["grid_depth"] as! NSNumber).floatValue
+    let block_size = (sceneParams["block_size"] as! NSNumber).floatValue
+    let voxel_size = (sceneParams["voxel_size"] as! NSNumber).floatValue
+    let atlas_width = (sceneParams["atlas_width"] as! NSNumber).floatValue
+    let atlas_height = (sceneParams["atlas_height"] as! NSNumber).floatValue
+    let atlas_depth = (sceneParams["atlas_depth"] as! NSNumber).floatValue
+
+    let volume_width = (sceneParams["volume_width"] as! Int)
+    let volume_height = (sceneParams["volume_height"] as! Int)
+    let volume_depth = (sceneParams["volume_depth"] as! Int)
+
+    let numSlices = sceneParams["num_slices"] as! Int
+
+
+    loadSplitVolumeTexturePNG(pngName: "feature", num_slices: numSlices,
+                                   volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+
+    loadVolumeTexturePNG(pngName: "rgba", num_slices: numSlices,
+                              volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+
+    return nil
   }
 }
 
@@ -167,92 +255,4 @@ func loadImage(name: String) -> [UInt8] {
   }
 
   return imageInts
-}
-
-func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
-//  // Reset the texture loading window.
-//  gLoadedRGBATextures = gLoadedFeatureTextures = gNumTextures = 0;
-//  updateLoadingProgress();
-
-  var sceneParams:[String: Any] = readSceneParams()
-  let atlasIndexImage = loadImage(name: "lego/atlas_indices.png")
-
-//
-//    // Start rendering ASAP, forcing THREE.js to upload the textures.
-//    requestAnimationFrame(render);
-//
-  sceneParams["dirUrl"] = dirUrl
-  sceneParams["loadingTextures"] = false
-  sceneParams["diffuse"] = true
-  // If we have a view-dependence network in the json file, turn on view
-  // dependence.
-//  if ('0_bias' in gSceneParams) {
-//    gSceneParams['diffuse'] = false;
-//  }
-  let numTextures = sceneParams["num_slices"]
-
-//    let atlasIndexTexture = new THREE.DataTexture3D(
-//        atlasIndexImage,
-//        Math.ceil(gSceneParams['grid_width'] / gSceneParams['block_size']),
-//        Math.ceil(gSceneParams['grid_height'] / gSceneParams['block_size']),
-//        Math.ceil(gSceneParams['grid_depth'] / gSceneParams['block_size']));
-//    atlasIndexTexture.format = THREE.RGBAFormat;
-//    atlasIndexTexture.generateMipmaps = false;
-//    atlasIndexTexture.magFilter = atlasIndexTexture.minFilter =
-//        THREE.NearestFilter;
-//    atlasIndexTexture.wrapS = atlasIndexTexture.wrapT =
-//        atlasIndexTexture.wrapR = THREE.ClampToEdgeWrapping;
-//    atlasIndexTexture.type = THREE.UnsignedByteType;
-  let atlasIndexTextureDescriptor = MTLTextureDescriptor()
-  atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
-  atlasIndexTextureDescriptor.textureType = .type3D
-  atlasIndexTextureDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  atlasIndexTextureDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  atlasIndexTextureDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
-
-//
-//    let fullScreenPlane = new THREE.PlaneBufferGeometry(width, height);
-//    let rayMarchMaterial = createRayMarchMaterial(
-//        gSceneParams, alphaVolumeTexture, rgbVolumeTexture,
-//        featureVolumeTexture, atlasIndexTexture,
-//        new THREE.Vector3(
-//            gSceneParams['min_x'], gSceneParams['min_y'],
-//            gSceneParams['min_z']),
-//        gSceneParams['grid_width'], gSceneParams['grid_height'],
-//        gSceneParams['grid_depth'], gSceneParams['block_size'],
-//        gSceneParams['voxel_size'], gSceneParams['atlas_width'],
-//        gSceneParams['atlas_height'], gSceneParams['atlas_depth']);
-  let fullScreenPlaneDescriptor = MTLTextureDescriptor()
-  fullScreenPlaneDescriptor.pixelFormat = .rgba8Uint
-  fullScreenPlaneDescriptor.textureType = .type3D
-  fullScreenPlaneDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  fullScreenPlaneDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  fullScreenPlaneDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-  let fullScreenPlane = device.makeTexture(descriptor: rgbVolumeTextureDescriptor)
-
-//  return initializedPromise;
-}
-
-func createRayMarchMaterial(sceneParams: [String: Any],
-                            alphaVolumeTexture: MTLTexture,
-                            rgbVolumeTexture: MTLTexture,
-                            featureVolumeTexture: MTLTexture,
-                            atlasIndexTexture: MTLTexture) -> DataLoader? {
-
-  let minPosition: float3 = float3((sceneParams["min_x"] as! NSNumber).floatValue,
-                                   (sceneParams["min_y"] as! NSNumber).floatValue,
-                                   (sceneParams["min_z"] as! NSNumber).floatValue)
-
-  let gridWidth = (sceneParams["grid_width"] as! NSNumber).floatValue
-  let grid_height = (sceneParams["grid_height"] as! NSNumber).floatValue
-  let grid_depth = (sceneParams["grid_depth"] as! NSNumber).floatValue
-  let block_size = (sceneParams["block_size"] as! NSNumber).floatValue
-  let voxel_size = (sceneParams["voxel_size"] as! NSNumber).floatValue
-  let atlas_width = (sceneParams["atlas_width"] as! NSNumber).floatValue
-  let atlas_height = (sceneParams["atlas_height"] as! NSNumber).floatValue
-  let atlas_depth = (sceneParams["atlas_depth"] as! NSNumber).floatValue
-
-  return nil
-
 }

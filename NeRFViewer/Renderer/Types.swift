@@ -22,11 +22,7 @@ struct VertexConstants {
   let world_T_clip:float4x4 = float4x4(float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0));
 }
 
-struct FragmentConstants {
-  var animateBy: Float = 0
-  var bar: Float = 0;
-  var foo: SIMD4<Float> = SIMD4<Float>(1, 0, 1, 1);
-  
+struct FragmentConstants {  
   // Stuff from the viewer shader. (Remeber to update the others)
   var displayMode: Int = 0
   var ndc: Int = 0;

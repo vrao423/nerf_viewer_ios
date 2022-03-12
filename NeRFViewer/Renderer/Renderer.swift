@@ -59,9 +59,6 @@ class Renderer: NSObject {
     vertexDesciptor.layouts[0].stride = MemoryLayout<VertexIn>.stride
 
     pipelineDescriptor.vertexDescriptor = vertexDesciptor
-    
-    fragmentConstants.bar = 0.2
-    fragmentConstants.foo = SIMD4<Float>(1,1,0,1)
 
     do {
       pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
@@ -87,9 +84,6 @@ extension Renderer: MTKViewDelegate {
     time += 1.0 / Float(view.preferredFramesPerSecond)
 
     let animateBy = abs(sin(time)/2 + 0.5)
-    fragmentConstants.animateBy = animateBy
-    fragmentConstants.bar = 0.2
-    //fragmentConstants.foo = SIMD4<Float>(1,0,1,1)
 
     let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)!
     commandEncoder.setRenderPipelineState(pipelineState)
