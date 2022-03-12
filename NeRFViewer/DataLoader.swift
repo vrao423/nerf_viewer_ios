@@ -19,13 +19,13 @@ class DataLoader {
   var fragmentConstants: FragmentConstants
   var vertexConstants: VertexConstants
 
-  let mapAlpha: SCNMaterialProperty
+  var mapAlpha: SCNMaterialProperty
   var mapColor: SCNMaterialProperty
-  let mapFeatures: SCNMaterialProperty
-  let mapIndex: SCNMaterialProperty
-  let weightsZero: SCNMaterialProperty
-  let weightsOne: SCNMaterialProperty
-  let weightsTwo: SCNMaterialProperty
+  var mapFeatures: SCNMaterialProperty
+  var mapIndex: SCNMaterialProperty
+  var weightsZero: SCNMaterialProperty
+  var weightsOne: SCNMaterialProperty
+  var weightsTwo: SCNMaterialProperty
   
   func loadSplitVolumeTexturePNG(pngName: String, num_slices: Int,
                                  volume_width: Int, volume_height: Int, volume_depth: Int) {
@@ -55,6 +55,20 @@ class DataLoader {
     self.mapAlpha = make3DSCNMaterialProperty(data:alphaPixels, pixelFormat:1, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
   }
   
+  func loadVolumeTexturePNG(pngName: String, num_slices: Int,
+                            volume_width: Int, volume_height: Int, volume_depth: Int) {
+    var rgbaPixels:Array = Array<UInt8>()
+    
+    for i in 0..<num_slices {
+      // loadPNG should return an array of bytes (uint8).
+      let rgbaPath = pngName + "_00" + String(i) + ".png"
+      let rgbaPixelsSlice = loadImage(name:rgbaPath)
+      
+      rgbaPixels.append(contentsOf: rgbaPixelsSlice)
+    }
+    self.mapFeatures = make3DSCNMaterialProperty(data:rgbaPixels, pixelFormat:4, volume_width: volume_width, volume_height: volume_height, volume_depth: volume_depth)
+  }
+  
   func make3DSCNMaterialProperty (data: Array<UInt8>, pixelFormat: Int, volume_width: Int,
                                   volume_height: Int, volume_depth: Int) -> SCNMaterialProperty {
     let textureDescriptor = MTLTextureDescriptor()
@@ -72,17 +86,13 @@ class DataLoader {
 //    }
 //
 //    let texture = buffer?.makeTexture(descriptor: textureDescriptor,offset:0, bytesPerRow: data.count)
-    
     let texture = device?.makeTexture(descriptor: textureDescriptor)
-    
     texture?.replace(region: MTLRegionMake3D(0, 0, 0, volume_width, volume_height, volume_depth),
                             mipmapLevel:0,
                             slice:0,
                             withBytes:data,
                             bytesPerRow:volume_width * pixelFormat,
                             bytesPerImage:volume_width * volume_height * pixelFormat)
-    
-    
     let materialProp = SCNMaterialProperty()
     materialProp.contents = texture
     
