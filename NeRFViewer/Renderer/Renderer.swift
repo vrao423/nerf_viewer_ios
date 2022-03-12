@@ -21,11 +21,14 @@ class Renderer: NSObject {
   var vertexConstants = VertexConstants()
   var fragmentConstants = FragmentConstants()
 
+  var texture: MTLTexture?
+
   init(device: MTLDevice) {
     self.device = device
     commandQueue = device.makeCommandQueue()
     super.init()
     place = Plane(device: device, imageName: "shrek")
+    self.texture = setTexture(device: device, imageName: "shrek")
     buildPipelineState()
   }
 
@@ -98,6 +101,8 @@ extension Renderer: MTKViewDelegate {
     commandEncoder.setFragmentBytes(&fragmentConstants, length: MemoryLayout<FragmentConstants>.stride, index: 1)
     
 
+    commandEncoder.setFragmentTexture(texture, index: 0)
+
     commandEncoder.drawIndexedPrimitives(type: .triangle,
                                          indexCount: place.indices.count,
                                          indexType: .uint16,
@@ -108,4 +113,8 @@ extension Renderer: MTKViewDelegate {
     commandBuffer.present(drawable)
     commandBuffer.commit()
   }
+}
+
+extension Renderer: Texturable {
+
 }

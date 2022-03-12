@@ -213,3 +213,10 @@ fragment half4 fragment_shader(VertexOut vertexOut [[stage_in]],
   
   return half4(fragmentConstants.foo);
 }
+
+fragment half4 texture_fragment(VertexOut vertexIn [[ stage_in ]],
+                                texture2d<float> texture [[ texture(0) ]]) {
+  constexpr sampler defaultSampler;
+  float4 color = texture.sample(defaultSampler, vertexIn.textureCoordinates);
+  return half4(color.r, color.g, color.b, 1);
+}
