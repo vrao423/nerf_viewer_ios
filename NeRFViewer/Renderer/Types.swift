@@ -19,7 +19,7 @@ struct VertexOut {
 }
 
 struct VertexConstants {
-  let world_T_clip:float4x4 = float4x4(float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0), float4(0,0,0,0));
+  let world_T_clip:float4x4;
 }
 
 struct FragmentConstants {  

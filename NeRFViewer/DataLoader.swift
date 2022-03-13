@@ -153,7 +153,8 @@ class DataLoader {
                                                ndc_w: ndc_w,
                                                ndc_f: ndc_f)
 
-    self.vertexConstants = VertexConstants()
+    let world_T_clip: float4x4 = float4x4(0);
+    self.vertexConstants = VertexConstants(world_T_clip: world_T_clip)
 
     let numSlices = sceneParams["num_slices"] as! Int
 
