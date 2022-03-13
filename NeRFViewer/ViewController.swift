@@ -68,7 +68,7 @@ class ViewController: UIViewController {
     scnView.showsStatistics = true
 
     // configure the view
-    scnView.backgroundColor = UIColor.green
+    scnView.backgroundColor = UIColor.blue
 
   }
 }
