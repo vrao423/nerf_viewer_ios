@@ -30,7 +30,10 @@ class NeRFNode: SCNNode {
 //    self.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
 
     self.position = SCNVector3(0, 0, -100)
-    self.geometry = SCNPlane(width: CGFloat(width), height: CGFloat(height))
+    let plane = SCNPlane(width: CGFloat(width), height: CGFloat(height));
+    plane.widthSegmentCount = width;
+    plane.heightSegmentCount = height;
+    self.geometry = plane;
     let program = SCNProgram()
     program.vertexFunctionName = "vertex_shader"
     program.fragmentFunctionName = "fragment_shader"

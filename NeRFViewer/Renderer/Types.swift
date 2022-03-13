@@ -39,3 +39,21 @@ struct FragmentConstants {
   var ndc_w: Float;
   var ndc_f: Float;
 }
+
+//struct FragmentConstants {
+//  // Stuff from the viewer shader.
+//  int displayMode;
+//  int ndc;
+//
+//  float3 minPosition;
+//  float3 gridSize;
+//  float3 atlasSize;
+//  float voxelSize;
+//  float blockSize;
+//  float3x3 worldspace_R_opengl;
+//  float nearPlane;
+//
+//  float ndc_h;
+//  float ndc_w;
+//  float ndc_f;
+//};

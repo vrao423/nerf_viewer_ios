@@ -58,6 +58,13 @@ vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
 //  vertexOut.color = vertexIn.color;
   
   // The actual viewer stuff:
+  
+//  let world_T_camera = gCamera.matrixWorld;
+//  let camera_T_clip = new THREE.Matrix4();
+//  camera_T_clip.getInverse(gCamera.projectionMatrix);
+//  let world_T_clip = new THREE.Matrix4();
+//  world_T_clip.multiplyMatrices(world_T_camera, camera_T_clip);
+  
   VertexOut vertexOut;
   float4 positionClip = scn_node.modelViewProjectionTransform * float4(vertexIn.position, 1.0);
   
