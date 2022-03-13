@@ -27,6 +27,7 @@ struct NodeBuffer {
   float4x4 modelViewProjectionTransform;
   float4x4 modelViewTransform;
   float4x4 normalTransform;
+  float4x4 inverseModelViewProjectionTransform;
   float2x3 boundingBox;
 };
 
@@ -65,12 +66,16 @@ vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
 //  let world_T_clip = new THREE.Matrix4();
 //  world_T_clip.multiplyMatrices(world_T_camera, camera_T_clip);
   
+  float4x4 world_T_camera = scn_node.modelTransform;
+  float4x4 camera_T_clip = scn_node.inverseModelViewProjectionTransform;
+  float4x4 world_T_clip = world_T_camera * camera_T_clip;
+  
   VertexOut vertexOut;
   float4 positionClip = scn_node.modelViewProjectionTransform * float4(vertexIn.position, 1.0);
   
   positionClip /= positionClip.w;
-  float4 nearPoint = vertexConstants.world_T_clip * float4(positionClip.x, positionClip.y, -1.0, 1.0);
-  float4 farPoint = vertexConstants.world_T_clip * float4(positionClip.x, positionClip.y, 1.0, 1.0);
+  float4 nearPoint = world_T_clip * float4(positionClip.x, positionClip.y, -1.0, 1.0);
+  float4 farPoint = world_T_clip * float4(positionClip.x, positionClip.y, 1.0, 1.0);
 
   vertexOut.vOrigin = nearPoint.xyz / nearPoint.w;
   vertexOut.vDirection = normalize(farPoint.xyz / farPoint.w - vertexOut.vOrigin);

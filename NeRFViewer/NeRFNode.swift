@@ -26,9 +26,6 @@ class NeRFNode: SCNNode {
     let height = 720;
 
     self.castsShadow = false
-//    self.position = SCNVector3(0, 0, 0)
-//    self.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
-
     self.position = SCNVector3(0, 0, -100)
     let plane = SCNPlane(width: CGFloat(width), height: CGFloat(height));
     plane.widthSegmentCount = width;
