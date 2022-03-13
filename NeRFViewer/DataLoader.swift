@@ -218,9 +218,9 @@ class DataLoader {
     let atlasIndexTextureDescriptor = MTLTextureDescriptor()
     atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
     atlasIndexTextureDescriptor.textureType = .type3D
-    atlasIndexTextureDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-    atlasIndexTextureDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-    atlasIndexTextureDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.width = Int((sceneParams["atlas_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.height = Int((sceneParams["atlas_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.depth = Int((sceneParams["atlas_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
     let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
     
     let mywidth = ((sceneParams["grid_width"] as! Int) / (sceneParams["block_size"] as! Int))
@@ -238,32 +238,6 @@ class DataLoader {
                                withBytes:atlasIndexImage,
                                bytesPerRow:atlasIndexTextureDescriptor.width * 4 * MemoryLayout<UInt8>.size)
     self.mapIndex = SCNMaterialProperty(contents: atlasIndexTexture)
-
-  //
-  //    let fullScreenPlane = new THREE.PlaneBufferGeometry(width, height);
-  //    let rayMarchMaterial = createRayMarchMaterial(
-  //        gSceneParams, alphaVolumeTexture, rgbVolumeTexture,
-  //        featureVolumeTexture, atlasIndexTexture,
-  //        new THREE.Vector3(
-  //            gSceneParams['min_x'], gSceneParams['min_y'],
-  //            gSceneParams['min_z']),
-  //        gSceneParams['grid_width'], gSceneParams['grid_height'],
-  //        gSceneParams['grid_depth'], gSceneParams['block_size'],
-  //        gSceneParams['voxel_size'], gSceneParams['atlas_width'],
-  //        gSceneParams['atlas_height'], gSceneParams['atlas_depth']);
-//    let fullScreenPlaneDescriptor = MTLTextureDescriptor()
-//    fullScreenPlaneDescriptor.pixelFormat = .rgba8Uint
-//    fullScreenPlaneDescriptor.textureType = .type3D
-//    fullScreenPlaneDescriptor.width = Int((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-//    fullScreenPlaneDescriptor.height = Int((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-//    fullScreenPlaneDescriptor.depth = Int((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-//    let fullScreenPlane = device.makeTexture(descriptor: fullScreenPlaneDescriptor)
-    
-    
-    // Set up fullScreenPlane.
-    //let fullScreenPlane = SCNPlane(width: CGFloat(width), height: CGFloat(height))
-    
-    
 
     createRayMarchMaterial(sceneParams: sceneParams)
   }

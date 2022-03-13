@@ -156,13 +156,13 @@ float2 rayAabbIntersection(float3 aabbMin,float3 aabbMax,float3 origin,float3 in
 fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
                                constant NodeBuffer& scn_node [[buffer(1)]],
                                constant FragmentConstants &fragmentConstants [[buffer(2)]],
-                               texture3d<float, access::sample> mapAlpha [[texture(0)]],
-                               texture3d<float, access::sample> mapColor [[texture(1)]],
-                               texture3d<float, access::sample> mapFeatures [[texture(2)]],
-                               texture3d<float, access::sample> mapIndex [[texture(3)]],
-                               texture2d<float, access::sample> weightsZero [[texture(4)]],
-                               texture2d<float, access::sample> weightsOne [[texture(5)]],
-                               texture2d<float, access::sample> weightsTwo [[texture(6)]]) {
+                               texture3d<int, access::sample> mapAlpha [[texture(0)]],
+                               texture3d<int, access::sample> mapColor [[texture(1)]],
+                               texture3d<int, access::sample> mapFeatures [[texture(2)]],
+                               texture3d<int, access::sample> mapIndex [[texture(3)]],
+                               texture2d<int, access::sample> weightsZero [[texture(4)]],
+                               texture2d<int, access::sample> weightsOne [[texture(5)]],
+                               texture2d<int, access::sample> weightsTwo [[texture(6)]]) {
   
   // See the DisplayMode enum at the top of this file.
   // Runs the full model with view dependence.
