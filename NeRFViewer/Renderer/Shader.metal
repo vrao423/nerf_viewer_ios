@@ -216,7 +216,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   
   // Skip any rays that miss the scene bounding box.
   if (tMinMax.x > tMinMax.y) {
-      return float4(1.0, 1.0, 1.0, 1.0);
+      return float4(1.0, 1.0, 0.0, 1.0);
   }
   
   float t = max(nearWorld / fragmentConstants.voxelSize, tMinMax.x) + 0.5;
@@ -339,7 +339,8 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
 //     color += evaluateNetwork(
 //       color, features, worldspace_R_opengl * normalize(vDirection));
 //   }
-    return float4(color, 1.0);
+   // return float4(color, 1.0);
+  return float4(1.0,0.0,1.0, 1.0);
   
   //return half4(fragmentConstants.foo);
 }
