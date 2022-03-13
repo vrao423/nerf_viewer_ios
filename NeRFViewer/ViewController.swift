@@ -13,6 +13,7 @@ class ViewController: UIViewController {
 //  var renderer: Renderer!
 
   let camera = SCNCamera()
+  var shaderScene: ShaderScene! = nil
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -28,13 +29,9 @@ class ViewController: UIViewController {
     // retrieve the SCNView
     let scnView = self.view as! SCNView
     scnView.delegate = self
-    // create a new scene
-    let scene = ShaderScene(device: scnView.device!)
 
-//    gCamera = new THREE.PerspectiveCamera(
-//        72, canvas.offsetWidth / canvas.offsetHeight, gNearPlane, 100.0);
-//    gCamera.aspect = view.offsetWidth / view.offsetHeight;
-//    gCamera.fov = vfovy;
+    // create a new scene
+    shaderScene = ShaderScene(device: scnView.device!)
 
     // create and add a camera to the scene
     let cameraNode = SCNNode()
@@ -42,7 +39,7 @@ class ViewController: UIViewController {
     cameraNode.camera?.zNear = 0.33
     cameraNode.camera?.zFar = 100.0
     cameraNode.camera?.fieldOfView = 35
-    scene.rootNode.addChildNode(cameraNode)
+    shaderScene.rootNode.addChildNode(cameraNode)
 
     // place the camera
     cameraNode.position = SCNVector3(x: 0, y: 0, z: 5)
@@ -52,21 +49,17 @@ class ViewController: UIViewController {
     lightNode.light = SCNLight()
     lightNode.light!.type = .omni
     lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-    scene.rootNode.addChildNode(lightNode)
+    shaderScene.rootNode.addChildNode(lightNode)
 
     // create and add an ambient light to the scene
     let ambientLightNode = SCNNode()
     ambientLightNode.light = SCNLight()
     ambientLightNode.light!.type = .ambient
     ambientLightNode.light!.color = UIColor.darkGray
-    scene.rootNode.addChildNode(ambientLightNode)
-
-
+    shaderScene.rootNode.addChildNode(ambientLightNode)
 
     // set the scene to the view
-    scnView.scene = scene
-
-
+    scnView.scene = shaderScene
 
     // allows the user to manipulate the camera
     scnView.allowsCameraControl = true
@@ -75,16 +68,29 @@ class ViewController: UIViewController {
     scnView.showsStatistics = true
 
     // configure the view
-    scnView.backgroundColor = UIColor.black
+    scnView.backgroundColor = UIColor.green
 
-//    // add a tap gesture recognizer
-//    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-//    scnView.addGestureRecognizer(tapGesture)
   }
 }
 
 extension ViewController: SCNSceneRendererDelegate {
-  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-    let world_T_clip = SCNMatrix4Invert( camera.projectionTransform)
-  }
+//  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+//    let projectionTransform = camera.projectionTransform
+//    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
+//    shaderScene.world_T_clip = world_T_clip
+//  }
+//
+//  func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+//    let scnView = self.view as! SCNView
+//    let device = scnView.device
+//    guard let encoder = scnView.currentRenderCommandEncoder else { return }
+//    let projectionTransform = camera.projectionTransform
+//    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
+//    shaderScene.world_T_clip = world_T_clip
+//
+//    var vertexConstants =  VertexConstants(world_T_clip: simd_float4x4(world_T_clip))
+//    let mtlBuffer = device!.makeBuffer(bytes: &vertexConstants, length: MemoryLayout<VertexConstants>.stride, options: .cpuCacheModeWriteCombined)
+//    encoder.setVertexBuffer(mtlBuffer, offset: 0, index: 2)
+//
+//  }
 }

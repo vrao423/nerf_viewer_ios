@@ -4,6 +4,13 @@ import Foundation
 class NeRFNode: SCNNode {
 
   let voxel_size: Float = 0.0024817874999999994
+  var dataLoader: DataLoader?
+  var world_T_clip: SCNMatrix4? {
+    didSet {
+      dataLoader!.vertexConstants =  VertexConstants(world_T_clip: simd_float4x4(world_T_clip!))
+      self.geometry?.firstMaterial?.setValue(dataLoader!.vertexConstants.encode(), forKey: "vertexConstants")
+    }
+  }
 
   required init?(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
@@ -36,6 +43,14 @@ class NeRFNode: SCNNode {
       return
     }
 
+//    program.handleBinding(ofBufferNamed: "vertexConstants", frequency: .perFrame) { (bufferStream, node, shadable, renderer) in
+//      bufferStream.writeBytes(&dataLoader.vertexConstants, count: MemoryLayout<VertexConstants>.stride)
+//    }
+
+    program.delegate = self
+
+    self.dataLoader = dataLoader
+
     self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
     self.geometry?.firstMaterial?.setValue(dataLoader.vertexConstants.encode(), forKey: "vertexConstants")
 
@@ -59,13 +74,12 @@ extension FragmentConstants {
 
 extension VertexConstants {
   mutating func encode() -> NSData {
-    return withUnsafePointer(to: &self) { p in
-        NSData(bytes: p, length: MemoryLayout<VertexConstants>.stride)
-      }
+    return NSData(bytes: &self, length: MemoryLayout<VertexConstants>.stride)
   }
 }
 
-
-
-
-
+extension NeRFNode: SCNProgramDelegate {
+  func program(_ program: SCNProgram, handleError error: Error) {
+    print("error: \(error)")
+  }
+}
