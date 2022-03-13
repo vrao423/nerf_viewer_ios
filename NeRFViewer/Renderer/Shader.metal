@@ -142,9 +142,9 @@ float3 pancakeBlockIndex(float3 posGrid, float blockSize, int3 iBlockGridBlocks,
   return atlasBlockIndex;
 }
 
-float2 rayAabbIntersection(float3 aabbMin,float3 aabbMax,float3 origin,float3 invDirection) {
-  float3 t1 = (aabbMin - origin) * invDirection;
-  float3 t2 = (aabbMax - origin) * invDirection;
+float2 rayAabbIntersection(int3 aabbMin,int3 aabbMax,float3 origin,float3 invDirection) {
+  float3 t1 = (float3(aabbMin) - origin) * invDirection;
+  float3 t2 = (float3(aabbMax) - origin) * invDirection;
   float3 tMin = min(t1, t2);
   float3 tMax = max(t1, t2);
   return float2(max(tMin.x, max(tMin.y, tMin.z)),
@@ -200,7 +200,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   int3 iBlockGridSize = iBlockGridBlocks * iBlockSize;
   int3 blockGridSize = int3(iBlockGridSize);
   float2 tMinMax = rayAabbIntersection(
-     float3(0.0, 0.0, 0.0), fragmentConstants.gridSize, originGrid, invDirectionGrid);
+     int3(0.0, 0.0, 0.0), int3(fragmentConstants.gridSize), originGrid, invDirectionGrid);
   
   // Skip any rays that miss the scene bounding box.
   if (tMinMax.x > tMinMax.y) {
@@ -209,22 +209,25 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   
   float t = max(nearWorld / fragmentConstants.voxelSize, tMinMax.x) + 0.5;
   float3 posGrid = originGrid + directionGrid * t;
+  
+  int3 blockNum = int3(floor(posGrid / fragmentConstants.blockSize));
 
-  float3 blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
-  float3 blockMax = blockMin + fragmentConstants.blockSize;
+  int3 blockMin = blockNum * int(fragmentConstants.blockSize);
+  int3 blockMax = blockMin + int(fragmentConstants.blockSize);
   float2 tBlockMinMax = rayAabbIntersection(
             blockMin, blockMax, originGrid, invDirectionGrid);
-  float3 atlasBlockIndex;
+  int3 atlasBlockIndex;
   
   // NOT SURE IF THIS IS CORRECT...
   constexpr sampler textureSampler (mag_filter::linear,
                                     min_filter::nearest);
 
   if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
-    atlasBlockIndex = pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
+    atlasBlockIndex = int3(pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize));
   } else {
     // Sample the texture to obtain a color
-    atlasBlockIndex = 255.0 * mapIndex.sample(textureSampler, (blockMin + blockMax) / (2.0 * float3(blockGridSize))).xyz;
+    int3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
+    atlasBlockIndex = 255 * mapIndex.sample(textureSampler, float3(sampleIndex)).xyz;
   }
     
     float visibility = 1.0;
@@ -239,13 +242,13 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
         t = 0.5 + tBlockMinMax.y;
       }
       else { // Otherwise step through them and fetch RGBA and Features.
-        float3 posAtlas = clamp(posGrid - blockMin, 0.0, fragmentConstants.blockSize);
-        posAtlas += atlasBlockIndex * (fragmentConstants.blockSize + 2.0);
+        float3 posAtlas = clamp(posGrid - float3(blockMin), 0.0, fragmentConstants.blockSize);
+        posAtlas += float3(atlasBlockIndex) * (fragmentConstants.blockSize + 2.0);
         posAtlas += 1.0; // Account for the one voxel padding in the atlas.
 
         if (fragmentConstants.displayMode == DISPLAY_COARSE_GRID) {
-          color = atlasBlockIndex * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
-          features.rgb = atlasBlockIndex * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
+          color = float3(atlasBlockIndex) * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
+          features.rgb = float3(atlasBlockIndex) * (fragmentConstants.blockSize + 2.0) / fragmentConstants.atlasSize;
           features.a = 1.0;
           visibility = 0.0;
           continue;
@@ -276,9 +279,9 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
           // Only worth fetching the content if high res alpha is non-zero.
           if (atlasAlpha > 0.5 / 255.0) {
             float4 atlasRgba = float4(0.0, 0.0, 0.0, atlasAlpha);
-            atlasRgba.rgb = mapColor.sample(textureSampler, atlasUvw).rgb;
+            atlasRgba.rgb = float3(mapColor.sample(textureSampler, atlasUvw).rgb);
             if (fragmentConstants.displayMode != DISPLAY_DIFFUSE) {
-              float4 atlasFeatures = mapFeatures.sample(textureSampler, atlasUvw);
+              float4 atlasFeatures = float4(mapFeatures.sample(textureSampler, atlasUvw));
               features += visibility * atlasFeatures;
             }
             color += visibility * atlasRgba.rgb;
@@ -290,16 +293,17 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
       
       posGrid = originGrid + directionGrid * t;
       if (t > tBlockMinMax.y) {
-       blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
-       blockMax = blockMin + fragmentConstants.blockSize;
+       blockMin = int3(floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize);
+       blockMax = blockMin + int3(fragmentConstants.blockSize);
        tBlockMinMax = rayAabbIntersection(
              blockMin, blockMax, originGrid, invDirectionGrid);
 
        if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
-         atlasBlockIndex = pancakeBlockIndex(
-           posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
+         atlasBlockIndex = int3(pancakeBlockIndex(
+           posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize));
        } else {
-         atlasBlockIndex = 255.0 * mapIndex.sample(textureSampler, (blockMin + blockMax) / (2.0 * float3(blockGridSize))).xyz;
+         int3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
+         atlasBlockIndex = 255 * mapIndex.sample(textureSampler, float3(sampleIndex)).xyz;
        }
       }
       step++;
