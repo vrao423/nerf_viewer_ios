@@ -19,6 +19,8 @@ class ViewController: UIViewController {
 
 //  var renderer: Renderer!
 
+  let camera = SCNCamera()
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -43,7 +45,7 @@ class ViewController: UIViewController {
 
     // create and add a camera to the scene
     let cameraNode = SCNNode()
-    cameraNode.camera = SCNCamera()
+    cameraNode.camera = camera
     cameraNode.camera?.zNear = 0.33
     cameraNode.camera?.zFar = 100.0
     cameraNode.camera?.fieldOfView = 35
@@ -89,9 +91,9 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: SCNSceneRendererDelegate {
-  optional func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-    let transform = scene.rootNode.camera!.projectionTransform
-    let camera_t_clip = SCNMatrix4Invert(transform)
+  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+    let projectionTransform = camera.projectionTransform
+    let camera_t_clip = SCNMatrix4Invert(projectionTransform)
 
 
 //    let world_T_camera = gCamera.matrixWorld;
