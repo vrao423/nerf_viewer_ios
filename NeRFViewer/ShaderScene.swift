@@ -1,10 +1,3 @@
-//
-//  ShaderScene.swift
-//  NeRFViewer
-//
-//  Created by Venkat Rao on 3/11/22.
-//
-
 import SceneKit
 
 final class ShaderScene: SCNScene {

@@ -53,18 +53,6 @@ struct VertexOut {
 vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
                                constant NodeBuffer& scn_node [[buffer(1)]],
                                constant VertexConstants &vertexConstants [[buffer(2)]]) {
-//  VertexOut vertexOut;
-//  vertexOut.position = float4(vertexIn.position,1);
-//  vertexOut.position.x += fragmentConstants.animateBy;
-//  vertexOut.color = vertexIn.color;
-  
-  // The actual viewer stuff:
-  
-//  let world_T_camera = gCamera.matrixWorld;
-//  let camera_T_clip = new THREE.Matrix4();
-//  camera_T_clip.getInverse(gCamera.projectionMatrix);
-//  let world_T_clip = new THREE.Matrix4();
-//  world_T_clip.multiplyMatrices(world_T_camera, camera_T_clip);
   
   float4x4 world_T_camera = scn_node.modelTransform;
   float4x4 camera_T_clip = scn_node.inverseModelViewProjectionTransform;
@@ -77,6 +65,7 @@ vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
   float4 nearPoint = world_T_clip * float4(positionClip.x, positionClip.y, -1.0, 1.0);
   float4 farPoint = world_T_clip * float4(positionClip.x, positionClip.y, 1.0, 1.0);
 
+  vertexOut.position = positionClip;
   vertexOut.vOrigin = nearPoint.xyz / nearPoint.w;
   vertexOut.vDirection = normalize(farPoint.xyz / farPoint.w - vertexOut.vOrigin);
   
@@ -176,6 +165,8 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
                                texture2d<uint, access::sample> weightsOne [[texture(5)]],
                                texture2d<uint, access::sample> weightsTwo [[texture(6)]]) {
   
+  //return float4(1.0,0.0,1.0,1.0);
+
   // See the DisplayMode enum at the top of this file.
   // Runs the full model with view dependence.
   const int DISPLAY_NORMAL = 0;
@@ -189,8 +180,8 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   const int DISPLAY_COARSE_GRID = 4;
   // Only shows the 3D texture atlas.
   const int DISPLAY_3D_ATLAS = 5;
-  
-  
+
+
   // Set up the ray parameters in world space..
   float nearWorld = fragmentConstants.nearPlane;
   float3 originWorld = vertexOut.vOrigin;
@@ -200,7 +191,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
     originWorld = convertOriginToNDC(vertexOut.vOrigin, normalize(vertexOut.vDirection), fragmentConstants.ndc_f, fragmentConstants.ndc_w, fragmentConstants.ndc_h);
     directionWorld = convertDirectionToNDC(vertexOut.vOrigin, normalize(vertexOut.vDirection),fragmentConstants.ndc_f, fragmentConstants.ndc_w, fragmentConstants.ndc_h);
   }
-  
+
   // Now transform them to the voxel grid coordinate system.
   float3 originGrid = (originWorld - fragmentConstants.minPosition) / fragmentConstants.voxelSize;
   float3 directionGrid = directionWorld;
@@ -213,15 +204,15 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   uint3 blockGridSize = uint3(iBlockGridSize);
   float2 tMinMax = rayAabbIntersection(
      uint3(0.0, 0.0, 0.0), uint3(fragmentConstants.gridSize), originGrid, invDirectionGrid);
-  
+
   // Skip any rays that miss the scene bounding box.
   if (tMinMax.x > tMinMax.y) {
       return float4(1.0, 1.0, 0.0, 1.0);
   }
-  
+
   float t = max(nearWorld / fragmentConstants.voxelSize, tMinMax.x) + 0.5;
   float3 posGrid = originGrid + directionGrid * t;
-  
+
   uint3 blockNum = uint3(floor(posGrid / fragmentConstants.blockSize));
 
   uint3 blockMin = blockNum * int(fragmentConstants.blockSize);
@@ -229,7 +220,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   float2 tBlockMinMax = rayAabbIntersection(
             blockMin, blockMax, originGrid, invDirectionGrid);
   uint3 atlasBlockIndex;
-  
+
   // NOT SURE IF THIS IS CORRECT...
   constexpr sampler textureSampler (mag_filter::linear,
                                     min_filter::nearest);
@@ -241,13 +232,13 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
     uint3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
     atlasBlockIndex = 255 * mapIndex.sample(textureSampler, float3(sampleIndex)).xyz;
   }
-    
+
     float visibility = 1.0;
     float3 color = float3(0.0, 0.0, 0.0);
     float4 features = float4(0.0, 0.0, 0.0, 0.0);
     int step = 0;
     int maxStep = int(ceil(length(fragmentConstants.gridSize)));
-    
+
     while (step < maxStep && t < tMinMax.y && visibility > 1.0 / 255.0) {
       // Skip empty macroblocks.
       if (atlasBlockIndex.x > 254.0) {
@@ -284,10 +275,10 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
         if (atlasAlpha > 0.0) {
           // OK, we hit something, do a proper trilinear fetch at high res.
           float3 atlasUvw = posAtlas / fragmentConstants.atlasSize;
-          
+
           // Note: Not sure sample == textureLod(,,0).
           atlasAlpha = mapAlpha.sample(textureSampler, atlasUvw).x;
-          
+
           // Only worth fetching the content if high res alpha is non-zero.
           if (atlasAlpha > 0.5 / 255.0) {
             float4 atlasRgba = float4(0.0, 0.0, 0.0, atlasAlpha);
@@ -302,7 +293,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
         }
         t += 1.0;
       }
-      
+
       posGrid = originGrid + directionGrid * t;
       if (t > tBlockMinMax.y) {
        blockMin = uint3(floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize);
@@ -326,21 +317,10 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
     } else if (fragmentConstants.displayMode == DISPLAY_FEATURES) {
       color = features.rgb;
     }
-    
+
     // Compute the final color, to save compute only compute view-depdence
    // for rays that intersected something in the scene.
    color = float3(1.0, 1.0, 1.0) * visibility + color;
-    
-    // TODO(jwkaiqi): enable the following...
-//   const float kVisibilityThreshold = 254.0 / 255.0;
-//   if (visibility <= kVisibilityThreshold &&
-//       (fragmentConstants.displayMode == DISPLAY_NORMAL ||
-//        fragmentConstants.displayMode == DISPLAY_VIEW_DEPENDENT)) {
-//     color += evaluateNetwork(
-//       color, features, worldspace_R_opengl * normalize(vDirection));
-//   }
-   // return float4(color, 1.0);
-  return float4(1.0,0.0,1.0, 1.0);
-  
-  //return half4(fragmentConstants.foo);
+
+  return float4(color, 1.0);
 }

@@ -1,10 +1,3 @@
-//
-//  NeRFNode.swift
-//  NeRFViewer
-//
-//  Created by Venkat Rao on 3/11/22.
-//
-
 import SceneKit
 import Foundation
 
@@ -26,11 +19,13 @@ class NeRFNode: SCNNode {
     let height = 720;
 
     self.castsShadow = false
-    self.position = SCNVector3(0, 0, -100)
+    
+    // Create a plane geometry with width * height vertices.
     let plane = SCNPlane(width: CGFloat(width), height: CGFloat(height));
     plane.widthSegmentCount = width;
     plane.heightSegmentCount = height;
     self.geometry = plane;
+    
     let program = SCNProgram()
     program.vertexFunctionName = "vertex_shader"
     program.fragmentFunctionName = "fragment_shader"

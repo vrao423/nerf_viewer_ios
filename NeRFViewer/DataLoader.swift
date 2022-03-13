@@ -1,10 +1,3 @@
-//
-//  DataLoader.swift
-//  NeRFViewer
-//
-//  Created by Venkat Rao on 3/11/22.
-//
-
 import Foundation
 import UIKit
 import simd
@@ -39,18 +32,13 @@ class DataLoader {
       let rgbaPath = pngName + "_00" + String(i) + ".png"
       let rgbaImage = loadImage(name:rgbaPath)
 
-//      var rgbaPixelsSlice:Array = Array<UInt8>()
-//      var alphaPixelsSlice:Array = Array<UInt8>()
-      
       let rgbaSize = volume_width * volume_height * slice_depth * 4
       let alphaSize = volume_width * volume_height * slice_depth * 1
       
       var rgbaPixelsSlice: [UInt8] = [UInt8](repeating: 0, count: rgbaSize)
       var alphaPixelsSlice: [UInt8] = [UInt8](repeating: 0, count: alphaSize)
-      
-      
-      print("rgbaImage size: ", rgbaImage.count)
-      print("volume_width * volume_height * slice_depth = ", volume_width * volume_height * slice_depth)
+    
+      print("loadSplitVolumeTexturePNG loading: ", i)
 
       for j in 0..<volume_width * volume_height * slice_depth {
         rgbaPixelsSlice[j * 4 + 0] = rgbaImage[j * 4 + 0]
@@ -58,11 +46,6 @@ class DataLoader {
         rgbaPixelsSlice[j * 4 + 2] = rgbaImage[j * 4 + 2]
         rgbaPixelsSlice[j * 4 + 3] = rgbaImage[j * 4 + 3]
         alphaPixelsSlice[j] = rgbaImage[j * 4 + 3]
-//        rgbaPixelsSlice[j * 4 + 0] = 200
-//        rgbaPixelsSlice[j * 4 + 1] = 100
-//        rgbaPixelsSlice[j * 4 + 2] = 180
-//        rgbaPixelsSlice[j * 4 + 3] = 100
-//        alphaPixelsSlice[j] = 100
       }
       rgbaPixels.append(contentsOf: rgbaPixelsSlice)
       alphaPixels.append(contentsOf: alphaPixelsSlice)
@@ -76,6 +59,7 @@ class DataLoader {
     var rgbaPixels:Array = Array<UInt8>()
 
     for i in 0..<num_slices {
+      print("loadVolumeTexturePNG loading :", i)
       // loadPNG should return an array of bytes (uint8).
       let rgbaPath = pngName + "_00" + String(i) + ".png"
       let rgbaPixelsSlice = loadImage(name:rgbaPath)
@@ -99,13 +83,6 @@ class DataLoader {
     textureDescriptor.depth = volume_depth
 
     let device = MTLCreateSystemDefaultDevice()
-//    let buffer = device?.makeBuffer(length: data.count, options: MTLResourceOptions.storageModeShared)
-
-//    for pixelInfo in data {
-//      buffer?.contents().storeBytes(of: pixelInfo, as: UInt8.self)
-//    }
-//
-//    let texture = buffer?.makeTexture(descriptor: textureDescriptor,offset:0, bytesPerRow: data.count)
     let texture = device?.makeTexture(descriptor: textureDescriptor)
     texture?.replace(region: MTLRegionMake3D(0, 0, 0, volume_width, volume_height, volume_depth),
                             mipmapLevel:0,
@@ -157,44 +134,17 @@ class DataLoader {
     self.vertexConstants = VertexConstants(world_T_clip: world_T_clip)
 
     let numSlices = sceneParams["num_slices"] as! Int
-
-//    for i in 0..<numSlices {
-//      loadImage(name: "lego/rgba_00\(i).png")
-//    }
-
-    // ???
-//    guard let landscapeImage  = UIImage(named: "shrek") else {
-//      return nil
-//    }
-//
-//    let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-//    self.weightsZero = materialProperty
-//    self.weightsOne = materialProperty
-//    self.weightsTwo = materialProperty
-    // ???
-
     loadScene(device: device, dirUrl: "lego", width: 1280, height: 720)
   }
 
   func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
-  //  // Reset the texture loading window.
-  //  gLoadedRGBATextures = gLoadedFeatureTextures = gNumTextures = 0;
-  //  updateLoadingProgress();
-
+    
     var sceneParams:[String: Any] = readSceneParams()
 
-  //
-  //    // Start rendering ASAP, forcing THREE.js to upload the textures.
-  //    requestAnimationFrame(render);
-  //
     sceneParams["dirUrl"] = dirUrl
     sceneParams["loadingTextures"] = false
     sceneParams["diffuse"] = true
-    // If we have a view-dependence network in the json file, turn on view
-    // dependence.
-  //  if ('0_bias' in gSceneParams) {
-  //    gSceneParams['diffuse'] = false;
-  //  }
+    
     let numTextures = sceneParams["num_slices"]
 
   //    let atlasIndexTexture = new THREE.DataTexture3D(
@@ -212,9 +162,6 @@ class DataLoader {
 
     // Set up atlasIndex (mapIndex)
     let atlasIndexImage = loadImage(name: "lego/atlas_indices.png")
-    let atlas_width = (sceneParams["atlas_width"] as! Int)
-    let atlas_height = (sceneParams["atlas_height"] as! Int)
-    let atlas_depth = (sceneParams["atlas_depth"] as! Int)
 
     let atlasIndexTextureDescriptor = MTLTextureDescriptor()
     atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
@@ -224,16 +171,7 @@ class DataLoader {
     atlasIndexTextureDescriptor.depth = Int((sceneParams["atlas_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
     let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
     
-    let mywidth = ((sceneParams["grid_width"] as! Int) / (sceneParams["block_size"] as! Int))
-    print("atlasIndexTextureDescriptor WIDTH:", mywidth)
-    
-    print("grid_width: " ,sceneParams["grid_width"])
-    print("block_size: " ,sceneParams["block_size"])
-    
-    
-    
-    print("atlasIndexTextureDescriptor.width", atlasIndexTextureDescriptor.width)
-    print("atlasIndexTextureDescriptor.height", atlasIndexTextureDescriptor.height)
+    // Create a 3D texture for atlasIndexTexture.
     atlasIndexTexture!.replace(region: MTLRegionMake3D(0, 0, 0, atlasIndexTextureDescriptor.width,  atlasIndexTextureDescriptor.height, atlasIndexTextureDescriptor.depth),
                                mipmapLevel:0,
                                withBytes:atlasIndexImage,
@@ -246,22 +184,11 @@ class DataLoader {
   
 
   func createRayMarchMaterial(sceneParams: [String: Any]) -> DataLoader? {
-
-    let minPosition: float3 = float3((sceneParams["min_x"] as! NSNumber).floatValue,
-                                     (sceneParams["min_y"] as! NSNumber).floatValue,
-                                     (sceneParams["min_z"] as! NSNumber).floatValue)
-
-    let gridWidth = (sceneParams["grid_width"] as! NSNumber).floatValue
-    let grid_height = (sceneParams["grid_height"] as! NSNumber).floatValue
-    let grid_depth = (sceneParams["grid_depth"] as! NSNumber).floatValue
-    let block_size = (sceneParams["block_size"] as! NSNumber).floatValue
-    let voxel_size = (sceneParams["voxel_size"] as! NSNumber).floatValue
     let atlas_width = (sceneParams["atlas_width"] as! Int)
     let atlas_height = (sceneParams["atlas_height"] as! Int)
     let atlas_depth = (sceneParams["atlas_depth"] as! Int)
 
     let numSlices = sceneParams["num_slices"] as! Int
-
 
     loadSplitVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
                                    volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
