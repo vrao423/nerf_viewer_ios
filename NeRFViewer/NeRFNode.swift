@@ -11,6 +11,13 @@ import Foundation
 class NeRFNode: SCNNode {
 
   let voxel_size: Float = 0.0024817874999999994
+  var dataLoader: DataLoader?
+  var world_T_clip: SCNMatrix4? {
+    didSet {
+      dataLoader!.vertexConstants =  VertexConstants(world_T_clip: simd_float4x4(world_T_clip!))
+      self.geometry?.firstMaterial?.setValue(dataLoader!.vertexConstants.encode(), forKey: "vertexConstants")
+    }
+  }
 
   required init?(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
@@ -26,11 +33,13 @@ class NeRFNode: SCNNode {
     let height = 720;
 
     self.castsShadow = false
-    self.position = SCNVector3(0, 0, -100)
+//    self.position = SCNVector3(0, 0, -100)
+
     let plane = SCNPlane(width: CGFloat(width), height: CGFloat(height));
     plane.widthSegmentCount = width;
     plane.heightSegmentCount = height;
     self.geometry = plane;
+
     let program = SCNProgram()
     program.vertexFunctionName = "vertex_shader"
     program.fragmentFunctionName = "fragment_shader"
@@ -40,6 +49,8 @@ class NeRFNode: SCNNode {
     guard let dataLoader = DataLoader(name: "lego", device: device) else {
       return
     }
+
+    self.dataLoader = dataLoader
 
     self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
     self.geometry?.firstMaterial?.setValue(dataLoader.vertexConstants.encode(), forKey: "vertexConstants")

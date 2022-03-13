@@ -68,5 +68,69 @@
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C8BC8480-A6D3-4F74-9362-75CD41074D2A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NeRFViewer/NeRFNode.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "world_T_clip"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "78C55EC0-136F-426A-BE3F-6E1AB1A07C86"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NeRFViewer/Renderer/Shader.metal"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "343"
+            endingLineNumber = "343"
+            landmarkName = "fragment_shader(VertexOut vertexOut [[stage_in]], constant NodeBuffer&amp; scn_node [[buffer(1)]], constant FragmentConstants &amp;fragmentConstants [[buffer(2)]], texture3d&lt;uint, access::sample&gt; mapAlpha [[texture(0)]], texture3d&lt;uint, access::sample&gt; mapColor [[texture(1)]], texture3d&lt;uint, access::sample&gt; mapFeatures [[texture(2)]], texture3d&lt;uint, access::sample&gt; mapIndex [[texture(3)]], texture2d&lt;uint, access::sample&gt; weightsZero [[texture(4)]], texture2d&lt;uint, access::sample&gt; weightsOne [[texture(5)]], texture2d&lt;uint, access::sample&gt; weightsTwo [[texture(6)]])"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "06C065EC-DE50-41FA-BD24-B645E1773E2D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NeRFViewer/Renderer/Shader.metal"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "324"
+            endingLineNumber = "324"
+            landmarkName = "fragment_shader(VertexOut vertexOut [[stage_in]], constant NodeBuffer&amp; scn_node [[buffer(1)]], constant FragmentConstants &amp;fragmentConstants [[buffer(2)]], texture3d&lt;uint, access::sample&gt; mapAlpha [[texture(0)]], texture3d&lt;uint, access::sample&gt; mapColor [[texture(1)]], texture3d&lt;uint, access::sample&gt; mapFeatures [[texture(2)]], texture3d&lt;uint, access::sample&gt; mapIndex [[texture(3)]], texture2d&lt;uint, access::sample&gt; weightsZero [[texture(4)]], texture2d&lt;uint, access::sample&gt; weightsOne [[texture(5)]], texture2d&lt;uint, access::sample&gt; weightsTwo [[texture(6)]])"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F02EDC80-E194-4246-AAF2-AE48525069E8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NeRFViewer/Renderer/Shader.metal"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "fragment_shader(VertexOut vertexOut [[stage_in]], constant NodeBuffer&amp; scn_node [[buffer(1)]], constant FragmentConstants &amp;fragmentConstants [[buffer(2)]], texture3d&lt;uint, access::sample&gt; mapAlpha [[texture(0)]], texture3d&lt;uint, access::sample&gt; mapColor [[texture(1)]], texture3d&lt;uint, access::sample&gt; mapFeatures [[texture(2)]], texture3d&lt;uint, access::sample&gt; mapIndex [[texture(3)]], texture2d&lt;uint, access::sample&gt; weightsZero [[texture(4)]], texture2d&lt;uint, access::sample&gt; weightsOne [[texture(5)]], texture2d&lt;uint, access::sample&gt; weightsTwo [[texture(6)]])"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
