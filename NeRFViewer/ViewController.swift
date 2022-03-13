@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  BrightnessShader
-//
-//  Created by Venkat Rao on 3/8/22.
-//
-
 import UIKit
 import MetalKit
 import SceneKit
