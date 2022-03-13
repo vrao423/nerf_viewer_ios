@@ -81,9 +81,23 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: SCNSceneRendererDelegate {
-  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-    let projectionTransform = camera.projectionTransform
-    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
-    shaderScene.world_T_clip = world_T_clip
-  }
+//  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+//    let projectionTransform = camera.projectionTransform
+//    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
+//    shaderScene.world_T_clip = world_T_clip
+//  }
+//
+//  func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+//    let scnView = self.view as! SCNView
+//    let device = scnView.device
+//    guard let encoder = scnView.currentRenderCommandEncoder else { return }
+//    let projectionTransform = camera.projectionTransform
+//    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
+//    shaderScene.world_T_clip = world_T_clip
+//
+//    var vertexConstants =  VertexConstants(world_T_clip: simd_float4x4(world_T_clip))
+//    let mtlBuffer = device!.makeBuffer(bytes: &vertexConstants, length: MemoryLayout<VertexConstants>.stride, options: .cpuCacheModeWriteCombined)
+//    encoder.setVertexBuffer(mtlBuffer, offset: 0, index: 2)
+//
+//  }
 }

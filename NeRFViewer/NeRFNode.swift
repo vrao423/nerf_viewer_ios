@@ -50,6 +50,12 @@ class NeRFNode: SCNNode {
       return
     }
 
+//    program.handleBinding(ofBufferNamed: "vertexConstants", frequency: .perFrame) { (bufferStream, node, shadable, renderer) in
+//      bufferStream.writeBytes(&dataLoader.vertexConstants, count: MemoryLayout<VertexConstants>.stride)
+//    }
+
+    program.delegate = self
+
     self.dataLoader = dataLoader
 
     self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
