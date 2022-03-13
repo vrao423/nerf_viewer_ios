@@ -183,10 +183,6 @@ class DataLoader {
 
     var sceneParams:[String: Any] = readSceneParams()
 
-  //
-  //    // Start rendering ASAP, forcing THREE.js to upload the textures.
-  //    requestAnimationFrame(render);
-  //
     sceneParams["dirUrl"] = dirUrl
     sceneParams["loadingTextures"] = false
     sceneParams["diffuse"] = true
@@ -197,20 +193,6 @@ class DataLoader {
   //  }
     let numTextures = sceneParams["num_slices"]
 
-  //    let atlasIndexTexture = new THREE.DataTexture3D(
-  //        atlasIndexImage,
-  //        Math.ceil(gSceneParams['grid_width'] / gSceneParams['block_size']),
-  //        Math.ceil(gSceneParams['grid_height'] / gSceneParams['block_size']),
-  //        Math.ceil(gSceneParams['grid_depth'] / gSceneParams['block_size']));
-  //    atlasIndexTexture.format = THREE.RGBAFormat;
-  //    atlasIndexTexture.generateMipmaps = false;
-  //    atlasIndexTexture.magFilter = atlasIndexTexture.minFilter =
-  //        THREE.NearestFilter;
-  //    atlasIndexTexture.wrapS = atlasIndexTexture.wrapT =
-  //        atlasIndexTexture.wrapR = THREE.ClampToEdgeWrapping;
-  //    atlasIndexTexture.type = THREE.UnsignedByteType;
-
-    // Set up atlasIndex (mapIndex)
     let atlasIndexImage = loadImage(name: "lego/atlas_indices.png")
     let atlas_width = (sceneParams["atlas_width"] as! Int)
     let atlas_height = (sceneParams["atlas_height"] as! Int)
@@ -225,15 +207,7 @@ class DataLoader {
     let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
     
     let mywidth = ((sceneParams["grid_width"] as! Int) / (sceneParams["block_size"] as! Int))
-    print("atlasIndexTextureDescriptor WIDTH:", mywidth)
-    
-    print("grid_width: " ,sceneParams["grid_width"])
-    print("block_size: " ,sceneParams["block_size"])
-    
-    
-    
-    print("atlasIndexTextureDescriptor.width", atlasIndexTextureDescriptor.width)
-    print("atlasIndexTextureDescriptor.height", atlasIndexTextureDescriptor.height)
+
     atlasIndexTexture!.replace(region: MTLRegionMake3D(0, 0, 0, atlasIndexTextureDescriptor.width,  atlasIndexTextureDescriptor.height, atlasIndexTextureDescriptor.depth),
                                mipmapLevel:0,
                                withBytes:atlasIndexImage,
@@ -242,8 +216,6 @@ class DataLoader {
 
     createRayMarchMaterial(sceneParams: sceneParams)
   }
-  
-  
 
   func createRayMarchMaterial(sceneParams: [String: Any]) -> DataLoader? {
 
@@ -261,7 +233,6 @@ class DataLoader {
     let atlas_depth = (sceneParams["atlas_depth"] as! Int)
 
     let numSlices = sceneParams["num_slices"] as! Int
-
 
     loadSplitVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
                                    volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
