@@ -19,6 +19,8 @@ class ViewController: UIViewController {
 
 //  var renderer: Renderer!
 
+  let camera = SCNCamera()
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -32,13 +34,21 @@ class ViewController: UIViewController {
 
     // retrieve the SCNView
     let scnView = self.view as! SCNView
-
+    scnView.delegate = self
     // create a new scene
     let scene = ShaderScene(device: scnView.device!)
 
+//    gCamera = new THREE.PerspectiveCamera(
+//        72, canvas.offsetWidth / canvas.offsetHeight, gNearPlane, 100.0);
+//    gCamera.aspect = view.offsetWidth / view.offsetHeight;
+//    gCamera.fov = vfovy;
+
     // create and add a camera to the scene
     let cameraNode = SCNNode()
-    cameraNode.camera = SCNCamera()
+    cameraNode.camera = camera
+    cameraNode.camera?.zNear = 0.33
+    cameraNode.camera?.zFar = 100.0
+    cameraNode.camera?.fieldOfView = 35
     scene.rootNode.addChildNode(cameraNode)
 
     // place the camera
@@ -77,5 +87,20 @@ class ViewController: UIViewController {
 //    // add a tap gesture recognizer
 //    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
 //    scnView.addGestureRecognizer(tapGesture)
+  }
+}
+
+extension ViewController: SCNSceneRendererDelegate {
+  func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+    let projectionTransform = camera.projectionTransform
+    let camera_t_clip = SCNMatrix4Invert(projectionTransform)
+
+
+//    let world_T_camera = gCamera.matrixWorld;
+//    let camera_T_clip = new THREE.Matrix4();
+//    camera_T_clip.getInverse(gCamera.projectionMatrix);
+//    let world_T_clip = new THREE.Matrix4();
+//    world_T_clip.multiplyMatrices(world_T_camera, camera_T_clip);
+
   }
 }
