@@ -92,8 +92,10 @@ class ViewController: UIViewController {
 
 extension ViewController: SCNSceneRendererDelegate {
   func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-    let projectionTransform = camera.projectionTransform
-    let camera_t_clip = SCNMatrix4Invert(projectionTransform)
+    let world_T_clip = SCNMatrix4Invert(camera.projectionTransform)
+    
+    
+    
 
 
 //    let world_T_camera = gCamera.matrixWorld;
