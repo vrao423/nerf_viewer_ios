@@ -22,11 +22,15 @@ class NeRFNode: SCNNode {
 
   init(device: MTLDevice) {
     super.init()
+    let width = 1280;
+    let height = 720;
 
     self.castsShadow = false
-    self.position = SCNVector3(0, 0, 0)
-    self.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
+//    self.position = SCNVector3(0, 0, 0)
+//    self.geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0)
 
+    self.position = SCNVector3(0, 0, -100)
+    self.geometry = SCNPlane(width: CGFloat(width), height: CGFloat(height))
     let program = SCNProgram()
     program.vertexFunctionName = "vertex_shader"
     program.fragmentFunctionName = "fragment_shader"
