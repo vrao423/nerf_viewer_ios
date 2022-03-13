@@ -75,13 +75,12 @@ extension FragmentConstants {
 
 extension VertexConstants {
   mutating func encode() -> NSData {
-    return withUnsafePointer(to: &self) { p in
-        NSData(bytes: p, length: MemoryLayout<VertexConstants>.stride)
-      }
+    return NSData(bytes: &self, length: MemoryLayout<VertexConstants>.stride)
   }
 }
 
-
-
-
-
+extension NeRFNode: SCNProgramDelegate {
+  func program(_ program: SCNProgram, handleError error: Error) {
+    print("error: \(error)")
+  }
+}

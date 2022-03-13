@@ -51,8 +51,9 @@ struct VertexOut {
 
 // Vertex Shader main
 vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
-                               constant NodeBuffer& scn_node [[buffer(1)]],
-                               constant VertexConstants &vertexConstants [[buffer(2)]]) {
+                               constant SCNSceneBuffer& scn_frame [[ buffer(0) ]],
+                               constant NodeBuffer& scn_node [[ buffer(1) ]],
+                               constant VertexConstants& vertexConstants [[ buffer(2) ]]) {
 //  VertexOut vertexOut;
 //  vertexOut.position = float4(vertexIn.position,1);
 //  vertexOut.position.x += fragmentConstants.animateBy;

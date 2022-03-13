@@ -40,11 +40,6 @@ class ViewController: UIViewController {
     // create a new scene
     shaderScene = ShaderScene(device: scnView.device!)
 
-//    gCamera = new THREE.PerspectiveCamera(
-//        72, canvas.offsetWidth / canvas.offsetHeight, gNearPlane, 100.0);
-//    gCamera.aspect = view.offsetWidth / view.offsetHeight;
-//    gCamera.fov = vfovy;
-
     // create and add a camera to the scene
     let cameraNode = SCNNode()
     cameraNode.camera = camera

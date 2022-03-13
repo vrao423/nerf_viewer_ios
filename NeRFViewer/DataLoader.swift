@@ -158,21 +158,6 @@ class DataLoader {
 
     let numSlices = sceneParams["num_slices"] as! Int
 
-//    for i in 0..<numSlices {
-//      loadImage(name: "lego/rgba_00\(i).png")
-//    }
-
-    // ???
-//    guard let landscapeImage  = UIImage(named: "shrek") else {
-//      return nil
-//    }
-//
-//    let materialProperty = SCNMaterialProperty(contents: landscapeImage)
-//    self.weightsZero = materialProperty
-//    self.weightsOne = materialProperty
-//    self.weightsTwo = materialProperty
-    // ???
-
     loadScene(device: device, dirUrl: "lego", width: 1280, height: 720)
   }
 
