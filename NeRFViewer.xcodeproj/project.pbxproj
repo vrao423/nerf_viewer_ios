@@ -13,10 +13,8 @@
 		C623B87327D88C5600E027AE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C623B87127D88C5600E027AE /* Main.storyboard */; };
 		C623B87527D88C5800E027AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C623B87427D88C5800E027AE /* Assets.xcassets */; };
 		C623B87827D88C5800E027AE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C623B87627D88C5800E027AE /* LaunchScreen.storyboard */; };
-		C6C08A2627D9A3AE0035797B /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2527D9A3AE0035797B /* Renderer.swift */; };
 		C6C08A2B27D9E4630035797B /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2927D9A80C0035797B /* Plane.swift */; };
 		C6D01AB727DAF3F2009D52BA /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01AB627DAF3F2009D52BA /* Types.swift */; };
-		C6D01ABC27DB0531009D52BA /* Texturable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01ABB27DB0531009D52BA /* Texturable.swift */; };
 		C6D01AE027DC1B7D009D52BA /* ShaderScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01ADF27DC1B7D009D52BA /* ShaderScene.swift */; };
 		C6D01B0427DC35AA009D52BA /* NeRFNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D01B0327DC35AA009D52BA /* NeRFNode.swift */; };
 		C6D01B0527DC3B6D009D52BA /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = C6C08A2727D9A5920035797B /* Shader.metal */; };
@@ -33,13 +31,10 @@
 		C623B87427D88C5800E027AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C623B87727D88C5800E027AE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C623B87927D88C5800E027AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C6C08A2527D9A3AE0035797B /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		C6C08A2727D9A5920035797B /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
 		C6C08A2927D9A80C0035797B /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		C6D01AB627DAF3F2009D52BA /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
-		C6D01ABB27DB0531009D52BA /* Texturable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texturable.swift; sourceTree = "<group>"; };
 		C6D01ADF27DC1B7D009D52BA /* ShaderScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderScene.swift; sourceTree = "<group>"; };
-		C6D01B0127DC1ECD009D52BA /* SceneKit.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SceneKit.metal; sourceTree = "<group>"; };
 		C6D01B0327DC35AA009D52BA /* NeRFNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFNode.swift; sourceTree = "<group>"; };
 		C6D01B0627DC43AA009D52BA /* lego */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lego; sourceTree = "<group>"; };
 		C6D01B0927DC5275009D52BA /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
@@ -94,10 +89,7 @@
 		C6D01AB827DAFE73009D52BA /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
-				C6C08A2527D9A3AE0035797B /* Renderer.swift */,
-				C6D01ABB27DB0531009D52BA /* Texturable.swift */,
 				C6C08A2727D9A5920035797B /* Shader.metal */,
-				C6D01B0127DC1ECD009D52BA /* SceneKit.metal */,
 				C6D01AB627DAF3F2009D52BA /* Types.swift */,
 			);
 			path = Renderer;
@@ -195,14 +187,12 @@
 				C6D01B0A27DC5275009D52BA /* DataLoader.swift in Sources */,
 				C6D01B0427DC35AA009D52BA /* NeRFNode.swift in Sources */,
 				C623B87027D88C5600E027AE /* ViewController.swift in Sources */,
-				C6C08A2627D9A3AE0035797B /* Renderer.swift in Sources */,
 				C623B86C27D88C5600E027AE /* AppDelegate.swift in Sources */,
 				C6D01AB727DAF3F2009D52BA /* Types.swift in Sources */,
 				C6C08A2B27D9E4630035797B /* Plane.swift in Sources */,
 				C6D01AE027DC1B7D009D52BA /* ShaderScene.swift in Sources */,
 				C623B86E27D88C5600E027AE /* SceneDelegate.swift in Sources */,
 				C6D01B0527DC3B6D009D52BA /* Shader.metal in Sources */,
-				C6D01ABC27DB0531009D52BA /* Texturable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
