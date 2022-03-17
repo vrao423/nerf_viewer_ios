@@ -153,16 +153,18 @@ class DataLoader {
     let atlasIndexTextureDescriptor = MTLTextureDescriptor()
     atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
     atlasIndexTextureDescriptor.textureType = .type3D
-    atlasIndexTextureDescriptor.width = Int((sceneParams["atlas_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-    atlasIndexTextureDescriptor.height = Int((sceneParams["atlas_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
-    atlasIndexTextureDescriptor.depth = Int((sceneParams["atlas_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue)
+    atlasIndexTextureDescriptor.width = Int(ceil((sceneParams["grid_width"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue))
+    atlasIndexTextureDescriptor.height = Int(ceil((sceneParams["grid_height"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue))
+    atlasIndexTextureDescriptor.depth = Int(ceil((sceneParams["grid_depth"] as! NSNumber).floatValue / (sceneParams["block_size"] as! NSNumber).floatValue))
     let atlasIndexTexture = device.makeTexture(descriptor: atlasIndexTextureDescriptor)
     
     // Create a 3D texture for atlasIndexTexture.
     atlasIndexTexture!.replace(region: MTLRegionMake3D(0, 0, 0, atlasIndexTextureDescriptor.width,  atlasIndexTextureDescriptor.height, atlasIndexTextureDescriptor.depth),
                                mipmapLevel:0,
+                               slice:0,
                                withBytes:atlasIndexImage,
-                               bytesPerRow:atlasIndexTextureDescriptor.width * 4 * MemoryLayout<UInt8>.size)
+                               bytesPerRow:atlasIndexTextureDescriptor.width * 4 * MemoryLayout<UInt8>.size,
+                               bytesPerImage: atlasIndexTextureDescriptor.width * atlasIndexTextureDescriptor.height * 4 * MemoryLayout<UInt8>.size)
     self.mapIndex = SCNMaterialProperty(contents: atlasIndexTexture)
 
     createRayMarchMaterial(sceneParams: sceneParams)

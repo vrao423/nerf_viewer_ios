@@ -5,6 +5,10 @@ class NeRFNode: SCNNode {
 
   let voxel_size: Float = 0.0024817874999999994
   var dataLoader: DataLoader?
+
+  var vertexConstantsData: Data?
+  var fragmentConstantsData: Data?
+
   var world_T_clip: SCNMatrix4? {
     didSet {
       dataLoader!.vertexConstants =  VertexConstants(world_T_clip: simd_float4x4(world_T_clip!))
@@ -51,8 +55,11 @@ class NeRFNode: SCNNode {
 
     self.dataLoader = dataLoader
 
-    self.geometry?.firstMaterial?.setValue(dataLoader.fragmentConstants.encode(), forKey: "fragmentConstants")
-    self.geometry?.firstMaterial?.setValue(dataLoader.vertexConstants.encode(), forKey: "vertexConstants")
+    vertexConstantsData = dataLoader.vertexConstants.encode()
+    fragmentConstantsData = dataLoader.fragmentConstants.encode()
+
+    self.geometry?.firstMaterial?.setValue(fragmentConstantsData!, forKey: "fragmentConstants")
+    self.geometry?.firstMaterial?.setValue(vertexConstantsData!, forKey: "vertexConstants")
 
     self.geometry?.firstMaterial?.setValue(dataLoader.mapAlpha, forKey: "mapAlpha")
     self.geometry?.firstMaterial?.setValue(dataLoader.mapColor, forKey: "mapColor")
@@ -65,16 +72,16 @@ class NeRFNode: SCNNode {
 }
 
 extension FragmentConstants {
-  mutating func encode() -> NSData {
+  mutating func encode() -> Data {
     return withUnsafePointer(to: &self) { p in
-        NSData(bytes: p, length: MemoryLayout<FragmentConstants>.stride)
+        Data(bytes: p, count: MemoryLayout<FragmentConstants>.stride)
       }
   }
 }
 
 extension VertexConstants {
-  mutating func encode() -> NSData {
-    return NSData(bytes: &self, length: MemoryLayout<VertexConstants>.stride)
+  mutating func encode() -> Data {
+    return Data(bytes: &self, count: MemoryLayout<VertexConstants>.stride)
   }
 }
 

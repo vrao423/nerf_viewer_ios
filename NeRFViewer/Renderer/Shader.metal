@@ -52,7 +52,7 @@ struct VertexOut {
 // Vertex Shader main
 vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
                                constant NodeBuffer& scn_node [[buffer(1)]],
-                               constant VertexConstants &vertexConstants [[buffer(2)]]) {
+                               constant VertexConstants& vertexConstants [[buffer(2)]]) {
   
   float4x4 world_T_camera = scn_node.modelTransform;
   float4x4 camera_T_clip = scn_node.inverseModelViewProjectionTransform;
