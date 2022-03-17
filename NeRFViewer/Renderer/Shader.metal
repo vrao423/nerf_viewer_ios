@@ -59,6 +59,7 @@ vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
   float4x4 world_T_clip = world_T_camera * camera_T_clip;
   
   VertexOut vertexOut;
+  // positionClip within -1 to 1. modelViewProjectionTransform is from the actual camera.
   float4 positionClip = scn_node.modelViewProjectionTransform * float4(vertexIn.position.x, vertexIn.position.y, 0.0, 1.0);
   
   positionClip /= positionClip.w;
