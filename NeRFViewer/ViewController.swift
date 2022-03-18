@@ -29,9 +29,8 @@ class ViewController: UIViewController {
     // retrieve the SCNView
     let scnView = self.view as! SCNView
     scnView.delegate = self
-
     // create a new scene
-    shaderScene = ShaderScene(device: scnView.device!)
+    shaderScene = ShaderScene(device: scnView.device!, width: Int(scnView.frame.size.width * UIScreen.main.scale), height: Int(scnView.frame.size.height * UIScreen.main.scale))
 
     // create and add a camera to the scene
     let cameraNode = SCNNode()
@@ -42,7 +41,7 @@ class ViewController: UIViewController {
     shaderScene.rootNode.addChildNode(cameraNode)
 
     // place the camera
-    cameraNode.position = SCNVector3(x: 0, y: 0, z: 5)
+    cameraNode.position = SCNVector3(x: 0, y: 1, z: -4)
 
     // create and add a light to the scene
     let lightNode = SCNNode()

@@ -19,13 +19,13 @@ struct VertexOut {
 }
 
 struct VertexConstants {
-  let world_T_clip: float4x4;
+  let blit_transform: float4x4;
 }
 
-struct FragmentConstants {  
+struct FragmentConstants {
   // Stuff from the viewer shader. (Remeber to update the others)
-  var displayMode: Int = 0
-  var ndc: Int = 0
+  var renderAreaSize: float2
+  
   
   let minPosition: float3
   let gridSize: float3
@@ -38,4 +38,6 @@ struct FragmentConstants {
   var ndc_h: Float;
   var ndc_w: Float;
   var ndc_f: Float;
+  var displayMode: Int = 0
+  var ndc: Int = 0
 }

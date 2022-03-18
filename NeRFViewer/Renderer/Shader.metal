@@ -6,9 +6,7 @@ using namespace metal;
 
 struct FragmentConstants {
   // Stuff from the viewer shader.
-  int displayMode;
-  int ndc;
-  
+  float2 renderAreaSize;
   float3 minPosition;
   float3 gridSize;
   float3 atlasSize;
@@ -20,6 +18,8 @@ struct FragmentConstants {
   float ndc_h;
   float ndc_w;
   float ndc_f;
+  int displayMode;
+  int ndc;
 };
 
 struct NodeBuffer {
@@ -29,10 +29,11 @@ struct NodeBuffer {
   float4x4 normalTransform;
   float4x4 inverseModelViewProjectionTransform;
   float2x3 boundingBox;
+  float4x4 inverseModelViewTransform;
 };
 
 struct VertexConstants {
-  float4x4 world_T_clip;
+  float4x4 blit_transform;
 };
 
 struct VertexIn {
@@ -43,7 +44,7 @@ struct VertexIn {
 struct VertexOut {
   float4 position [[ position ]];
   float4 color;
-  
+
   // Stuff from the viewer shader.
   float3 vOrigin;
   float3 vDirection;
@@ -53,23 +54,24 @@ struct VertexOut {
 vertex VertexOut vertex_shader(const VertexIn vertexIn [[stage_in]],
                                constant NodeBuffer& scn_node [[buffer(1)]],
                                constant VertexConstants& vertexConstants [[buffer(2)]]) {
-  
-  float4x4 world_T_camera = scn_node.modelTransform;
-  float4x4 camera_T_clip = scn_node.inverseModelViewProjectionTransform;
-  float4x4 world_T_clip = world_T_camera * camera_T_clip;
-  
+
+//  float4x4 world_T_camera = scn_node.modelTransform;
+//  float4x4 camera_T_clip = scn_node.inverseModelViewProjectionTransform;
+//  float4x4 world_T_clip = world_T_camera * camera_T_clip;
+
   VertexOut vertexOut;
   // positionClip within -1 to 1. modelViewProjectionTransform is from the actual camera.
-  float4 positionClip = scn_node.modelViewProjectionTransform * float4(vertexIn.position.x, vertexIn.position.y, 0.0, 1.0);
-  
-  positionClip /= positionClip.w;
-  float4 nearPoint = world_T_clip * float4(positionClip.x, positionClip.y, -1.0, 1.0);
-  float4 farPoint = world_T_clip * float4(positionClip.x, positionClip.y, 1.0, 1.0);
+//  float4 positionClip = vertexConstants.blit_transform * float4(vertexIn.position.x, vertexIn.position.y, 0.0, 1.0);
+//  float4 positionClip = scn_node.modelViewProjectionTransform * float4(vertexIn.position.x, vertexIn.position.y, 0.0, 1.0);
 
-  vertexOut.position = positionClip;
-  vertexOut.vOrigin = nearPoint.xyz / nearPoint.w;
-  vertexOut.vDirection = normalize(farPoint.xyz / farPoint.w - vertexOut.vOrigin);
-  
+//  positionClip /= positionClip.w;
+//  float4 nearPoint = float4(positionClip.x, positionClip.y, -1.0, 1.0);
+//  float4 farPoint = float4(positionClip.x, positionClip.y, 1.0, 1.0);
+
+  vertexOut.position = float4(vertexIn.position, 1);
+//  vertexOut.vOrigin = nearPoint.xyz / nearPoint.w;
+//  vertexOut.vDirection = normalize(farPoint.xyz / farPoint.w - vertexOut.vOrigin);
+
   return vertexOut;
 }
 
@@ -125,7 +127,7 @@ float3 convertDirectionToNDC(float3 origin, float3 direction,float ndc_f, float 
 
 // Compute the atlas block index for a point in the scene using pancake
 // 3D atlas packing.
-float3 pancakeBlockIndex(float3 posGrid, float blockSize, uint3 iBlockGridBlocks, float3 atlasSize) {
+float3 pancakeBlockIndex(float3 posGrid, float blockSize, int3 iBlockGridBlocks, float3 atlasSize) {
   int3 iBlockIndex = int3(floor(posGrid / blockSize));
   int3 iAtlasBlocks = int3(atlasSize) / int3(blockSize + 2.0);
   int linearIndex = iBlockIndex.x + iBlockGridBlocks.x *
@@ -144,15 +146,32 @@ float3 pancakeBlockIndex(float3 posGrid, float blockSize, uint3 iBlockGridBlocks
   return atlasBlockIndex;
 }
 
-float2 rayAabbIntersection(uint3 aabbMin, uint3 aabbMax,float3 origin,float3 invDirection) {
-  float3 t1 = (float3(aabbMin) - origin) * invDirection;
-  float3 t2 = (float3(aabbMax) - origin) * invDirection;
+float2 rayAabbIntersection(float3 aabbMin, float3 aabbMax,float3 origin,float3 invDirection) {
+  float3 t1 = (aabbMin - origin) * invDirection;
+  float3 t2 = (aabbMax - origin) * invDirection;
   float3 tMin = min(t1, t2);
   float3 tMax = max(t1, t2);
   return float2(max(tMin.x, max(tMin.y, tMin.z)),
               min(tMax.x, min(tMax.y, tMax.z)));
 }
 
+float4 debugHelper(float value, float break1, float break2, float break3, float break4){
+    if(value < break1){
+      return float4(1, 0, 0, 1);
+    }
+    else if(value < break2){
+      return float4(0, 1, 0, 1);
+    }
+    else if(value < break3){
+      return float4(0,0,1,1);
+    }
+    else if(value < break4){
+      return float4(0,1,1,1);
+    }
+    else{
+        return float4(1,1,0,1);
+    }
+}
 
 // Fragment Shader main.
 fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
@@ -182,7 +201,15 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   // Only shows the 3D texture atlas.
   const int DISPLAY_3D_ATLAS = 5;
 
-
+//  if(vertexOut.position.x > 800){
+//    return float4(1,0,0,1);
+//  }
+  
+  float2 uv = (vertexOut.position.xy - (fragmentConstants.renderAreaSize * 0.5)) / fragmentConstants.renderAreaSize.y;
+  float4 cameraPosition = scn_node.inverseModelViewTransform * float4(0,0,0,1);
+  vertexOut.vOrigin = cameraPosition.xyz;
+  vertexOut.vDirection = normalize(float3(uv.x, -uv.y, 1));
+  
   // Set up the ray parameters in world space..
   float nearWorld = fragmentConstants.nearPlane;
   float3 originWorld = vertexOut.vOrigin;
@@ -198,40 +225,39 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
   float3 directionGrid = directionWorld;
   float3 invDirectionGrid = 1.0 / directionGrid;
 
-  uint3 iGridSize = uint3(round(fragmentConstants.gridSize));
-  uint iBlockSize = uint(round(fragmentConstants.blockSize));
-  uint3 iBlockGridBlocks = (iGridSize + iBlockSize - 1) / iBlockSize;
-  uint3 iBlockGridSize = iBlockGridBlocks * iBlockSize;
-  uint3 blockGridSize = uint3(iBlockGridSize);
+  int3 iGridSize = int3(round(fragmentConstants.gridSize));
+  int iBlockSize = int(round(fragmentConstants.blockSize));
+  int3 iBlockGridBlocks = (iGridSize + iBlockSize - 1) / iBlockSize;
+  int3 iBlockGridSize = iBlockGridBlocks * iBlockSize;
+  float3 blockGridSize = float3(iBlockGridSize);
   float2 tMinMax = rayAabbIntersection(
-     uint3(0.0, 0.0, 0.0), uint3(fragmentConstants.gridSize), originGrid, invDirectionGrid);
+     float3(0.0, 0.0, 0.0), fragmentConstants.gridSize, originGrid, invDirectionGrid);
 
   // Skip any rays that miss the scene bounding box.
   if (tMinMax.x > tMinMax.y) {
-      return float4(1.0, 1.0, 0.0, 1.0);
+      return float4(1.0, 1.0, 1.0, 1.0);
   }
 
   float t = max(nearWorld / fragmentConstants.voxelSize, tMinMax.x) + 0.5;
   float3 posGrid = originGrid + directionGrid * t;
 
-  uint3 blockNum = uint3(floor(posGrid / fragmentConstants.blockSize));
-
-  uint3 blockMin = blockNum * int(fragmentConstants.blockSize);
-  uint3 blockMax = blockMin + int(fragmentConstants.blockSize);
+  float3 blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
+  float3 blockMax = blockMin + fragmentConstants.blockSize;
   float2 tBlockMinMax = rayAabbIntersection(
             blockMin, blockMax, originGrid, invDirectionGrid);
-  uint3 atlasBlockIndex;
+  float3 atlasBlockIndex;
 
   // NOT SURE IF THIS IS CORRECT...
   constexpr sampler textureSampler (mag_filter::linear,
                                     min_filter::nearest);
 
   if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
-    atlasBlockIndex = uint3(pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize));
+    atlasBlockIndex = pancakeBlockIndex(posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
   } else {
     // Sample the texture to obtain a color
-    uint3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
-    atlasBlockIndex = 255 * mapIndex.sample(textureSampler, float3(sampleIndex)).xyz;
+    float3 sampleIndex = (blockMin + blockMax) / (2.0 * blockGridSize);
+    atlasBlockIndex = float3(mapIndex.sample(textureSampler, sampleIndex).xyz);
+//    return debugHelper(mapIndex.sample(textureSampler, sampleIndex).x, 0.0, 0.2, 0.5, 0.8);
   }
 
     float visibility = 1.0;
@@ -239,7 +265,8 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
     float4 features = float4(0.0, 0.0, 0.0, 0.0);
     int step = 0;
     int maxStep = int(ceil(length(fragmentConstants.gridSize)));
-
+  
+  
     while (step < maxStep && t < tMinMax.y && visibility > 1.0 / 255.0) {
       // Skip empty macroblocks.
       if (atlasBlockIndex.x > 254.0) {
@@ -264,50 +291,50 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
         // fetches hit cache due to low res. Second, this is conservative,
         // and accounts for any possible alpha mass that the high resolution
         // trilinear would find.
-        const int skipMipLevel = 2;
-        const float miniBlockSize = float(1 << skipMipLevel);
+//        const int skipMipLevel = 2;
+//        const float miniBlockSize = float(1 << skipMipLevel);
 
         // Only fetch one byte at first, to conserve memory bandwidth in
         // empty space.
         // why uint??, not sure how to use skipMipLevel in here.
-        uint3 coord = uint3(posAtlas / miniBlockSize);
-        float atlasAlpha = mapAlpha.read(coord).x;
-
-        if (atlasAlpha > 0.0) {
+//        uint3 coord = uint3(posAtlas / miniBlockSize);
+//        float atlasAlpha = mapAlpha.read(coord).x / 255.0;
+//
+//        if (atlasAlpha > 0.0) {
           // OK, we hit something, do a proper trilinear fetch at high res.
           float3 atlasUvw = posAtlas / fragmentConstants.atlasSize;
 
           // Note: Not sure sample == textureLod(,,0).
-          atlasAlpha = mapAlpha.sample(textureSampler, atlasUvw).x;
+          float atlasAlpha = float(mapAlpha.sample(textureSampler, atlasUvw).x) / 255.0;
 
           // Only worth fetching the content if high res alpha is non-zero.
           if (atlasAlpha > 0.5 / 255.0) {
             float4 atlasRgba = float4(0.0, 0.0, 0.0, atlasAlpha);
-            atlasRgba.rgb = float3(mapColor.sample(textureSampler, atlasUvw).rgb);
-            if (fragmentConstants.displayMode != DISPLAY_DIFFUSE) {
-              float4 atlasFeatures = float4(mapFeatures.sample(textureSampler, atlasUvw));
-              features += visibility * atlasFeatures;
-            }
+            atlasRgba.rgb = float3(mapColor.sample(textureSampler, atlasUvw).rgb) / 255.0;
+//            if (fragmentConstants.displayMode != DISPLAY_DIFFUSE) {
+//              float4 atlasFeatures = float4(mapFeatures.sample(textureSampler, atlasUvw)) / 255.0;
+//              features += visibility * atlasFeatures;
+//            }
             color += visibility * atlasRgba.rgb;
             visibility *= 1.0 - atlasRgba.a;
           }
-        }
+//        }
         t += 1.0;
       }
 
       posGrid = originGrid + directionGrid * t;
       if (t > tBlockMinMax.y) {
-       blockMin = uint3(floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize);
-       blockMax = blockMin + uint3(fragmentConstants.blockSize);
+       blockMin = floor(posGrid / fragmentConstants.blockSize) * fragmentConstants.blockSize;
+       blockMax = blockMin + fragmentConstants.blockSize;
        tBlockMinMax = rayAabbIntersection(
              blockMin, blockMax, originGrid, invDirectionGrid);
 
        if (fragmentConstants.displayMode == DISPLAY_3D_ATLAS) {
-         atlasBlockIndex = uint3(pancakeBlockIndex(
-           posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize));
+         atlasBlockIndex = pancakeBlockIndex(
+           posGrid, fragmentConstants.blockSize, iBlockGridBlocks, fragmentConstants.atlasSize);
        } else {
-         uint3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
-         atlasBlockIndex = 255 * mapIndex.sample(textureSampler, float3(sampleIndex)).xyz;
+         float3 sampleIndex = (blockMin + blockMax) / (2 * blockGridSize);
+         atlasBlockIndex = float3(mapIndex.sample(textureSampler, sampleIndex).xyz);
        }
       }
       step++;
@@ -321,6 +348,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
 
     // Compute the final color, to save compute only compute view-depdence
    // for rays that intersected something in the scene.
+
    color = float3(1.0, 1.0, 1.0) * visibility + color;
 
   return float4(color, 1.0);

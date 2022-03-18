@@ -8,9 +8,8 @@ let ndc_w: Float = 1006.0;
 let ndc_h: Float = 756.0;
 
 class DataLoader {
-
+  var device: MTLDevice
   var fragmentConstants: FragmentConstants
-  var vertexConstants: VertexConstants
 
   var mapAlpha: SCNMaterialProperty!
   var mapColor: SCNMaterialProperty!
@@ -82,8 +81,7 @@ class DataLoader {
     textureDescriptor.height = volume_height
     textureDescriptor.depth = volume_depth
 
-    let device = MTLCreateSystemDefaultDevice()
-    let texture = device?.makeTexture(descriptor: textureDescriptor)
+    let texture = device.makeTexture(descriptor: textureDescriptor)
     texture?.replace(region: MTLRegionMake3D(0, 0, 0, volume_width, volume_height, volume_depth),
                             mipmapLevel:0,
                             slice:0,
@@ -97,9 +95,9 @@ class DataLoader {
   }
 
   init?(name: String, device: MTLDevice) {
-
+    self.device = device
     let sceneParams:[String: Any] = readSceneParams()
-
+    
     let gridSize = float3( (sceneParams["grid_width"] as! NSNumber).floatValue,
                            (sceneParams["grid_height"] as! NSNumber).floatValue,
                            (sceneParams["grid_depth"] as! NSNumber).floatValue)
@@ -117,8 +115,8 @@ class DataLoader {
                                (sceneParams["min_y"] as! NSNumber).floatValue,
                                (sceneParams["min_z"] as! NSNumber).floatValue)
 
-    self.fragmentConstants = FragmentConstants(displayMode: 0,
-                                               ndc: (sceneParams["ndc"] as! Int),
+    self.fragmentConstants = FragmentConstants(
+                                                renderAreaSize: float2(1125,2436),
                                                minPosition: minPosition,
                                                gridSize: gridSize,
                                                atlasSize: atlasSize,
@@ -128,10 +126,9 @@ class DataLoader {
                                                nearPlane: 0.33, // 686
                                                ndc_h: ndc_h,
                                                ndc_w: ndc_w,
-                                               ndc_f: ndc_f)
-
-    let world_T_clip: float4x4 = float4x4(2);
-    self.vertexConstants = VertexConstants(world_T_clip: world_T_clip)
+                                               ndc_f: ndc_f,
+                                                displayMode: 0,
+                                               ndc: (sceneParams["ndc"] as! Int))
 
     let numSlices = sceneParams["num_slices"] as! Int
 
@@ -177,11 +174,11 @@ class DataLoader {
 
     let numSlices = sceneParams["num_slices"] as! Int
 
-    loadSplitVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
+    loadSplitVolumeTexturePNG(pngName: "lego/rgba", num_slices: numSlices,
                                    volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
 
-    loadVolumeTexturePNG(pngName: "lego/rgba", num_slices: numSlices,
-                              volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
+//    loadVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
+//                              volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
 
     return nil
   }

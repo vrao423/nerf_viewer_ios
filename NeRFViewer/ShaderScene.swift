@@ -1,17 +1,10 @@
 import SceneKit
 
 final class ShaderScene: SCNScene {
-
-  var world_T_clip: SCNMatrix4? {
-    didSet {
-      node.world_T_clip = world_T_clip
-    }
-  }
-
   let node: NeRFNode
 
-  init(device: MTLDevice) {
-    node = NeRFNode(device: device)
+  init(device: MTLDevice, width: Int, height: Int) {
+    node = NeRFNode(device: device, width: width, height: height)
     super.init()
     rootNode.addChildNode(node)
   }
