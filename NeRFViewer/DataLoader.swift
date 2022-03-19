@@ -132,7 +132,7 @@ class DataLoader {
 
     let numSlices = sceneParams["num_slices"] as! Int
 
-    loadScene(device: device, dirUrl: "lego", width: 1280, height: 720)
+    loadScene(device: device, dirUrl: "chair", width: 1280, height: 720)
   }
 
   func loadScene(device: MTLDevice, dirUrl: String, width: Int, height: Int) {
@@ -145,7 +145,7 @@ class DataLoader {
     
     let numTextures = sceneParams["num_slices"]
 
-    let atlasIndexImage = loadImage(name: "lego/atlas_indices.png")
+    let atlasIndexImage = loadImage(name: "chair/atlas_indices.png")
 
     let atlasIndexTextureDescriptor = MTLTextureDescriptor()
     atlasIndexTextureDescriptor.pixelFormat = .rgba8Uint
@@ -174,7 +174,7 @@ class DataLoader {
 
     let numSlices = sceneParams["num_slices"] as! Int
 
-    loadSplitVolumeTexturePNG(pngName: "lego/rgba", num_slices: numSlices,
+    loadSplitVolumeTexturePNG(pngName: "chair/rgba", num_slices: numSlices,
                                    volume_width: atlas_width, volume_height: atlas_height, volume_depth: atlas_depth)
 
 //    loadVolumeTexturePNG(pngName: "lego/feature", num_slices: numSlices,
@@ -185,7 +185,7 @@ class DataLoader {
 }
 
 func readSceneParams() -> [String : Any] {
-  let path = Bundle.main.path(forResource: "lego/scene_params", ofType: "json")
+  let path = Bundle.main.path(forResource: "chair/scene_params", ofType: "json")
   let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
   let jsonResult:[String: Any] = try! JSONSerialization.jsonObject(with: jsonData, options: .mutableLeaves) as! [String : Any]
   return jsonResult

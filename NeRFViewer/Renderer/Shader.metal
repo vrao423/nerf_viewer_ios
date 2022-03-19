@@ -273,6 +273,7 @@ fragment float4 fragment_shader(VertexOut vertexOut [[stage_in]],
         t = 0.5 + tBlockMinMax.y;
       }
       else { // Otherwise step through them and fetch RGBA and Features.
+        //return float4(1.0,0.0,0,1);
         float3 posAtlas = clamp(posGrid - float3(blockMin), 0.0, fragmentConstants.blockSize);
         posAtlas += float3(atlasBlockIndex) * (fragmentConstants.blockSize + 2.0);
         posAtlas += 1.0; // Account for the one voxel padding in the atlas.

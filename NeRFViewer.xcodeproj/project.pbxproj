@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		41500FAA27E2E639007C9333 /* mic in Resources */ = {isa = PBXBuildFile; fileRef = 41500FA927E2E638007C9333 /* mic */; };
+		4153D62927E5117800813426 /* hotdog in Resources */ = {isa = PBXBuildFile; fileRef = 4153D62827E5117700813426 /* hotdog */; };
+		4153D62B27E51AD600813426 /* chair in Resources */ = {isa = PBXBuildFile; fileRef = 4153D62A27E51AD500813426 /* chair */; };
 		C623B86C27D88C5600E027AE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C623B86B27D88C5600E027AE /* AppDelegate.swift */; };
 		C623B86E27D88C5600E027AE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C623B86D27D88C5600E027AE /* SceneDelegate.swift */; };
 		C623B87027D88C5600E027AE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C623B86F27D88C5600E027AE /* ViewController.swift */; };
@@ -25,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		41500FA927E2E638007C9333 /* mic */ = {isa = PBXFileReference; lastKnownFileType = folder; path = mic; sourceTree = "<group>"; };
+		4153D62827E5117700813426 /* hotdog */ = {isa = PBXFileReference; lastKnownFileType = folder; path = hotdog; sourceTree = "<group>"; };
+		4153D62A27E51AD500813426 /* chair */ = {isa = PBXFileReference; lastKnownFileType = folder; path = chair; sourceTree = "<group>"; };
 		C623B86827D88C5600E027AE /* NeRFViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeRFViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C623B86B27D88C5600E027AE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C623B86D27D88C5600E027AE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +113,8 @@
 		C6D01B0827DC43D1009D52BA /* objects */ = {
 			isa = PBXGroup;
 			children = (
+				4153D62A27E51AD500813426 /* chair */,
+				4153D62827E5117700813426 /* hotdog */,
 				41500FA927E2E638007C9333 /* mic */,
 				C6D01B0627DC43AA009D52BA /* lego */,
 			);
@@ -173,11 +179,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4153D62B27E51AD600813426 /* chair in Resources */,
 				C623B87827D88C5800E027AE /* LaunchScreen.storyboard in Resources */,
 				41500FAA27E2E639007C9333 /* mic in Resources */,
 				C623B87527D88C5800E027AE /* Assets.xcassets in Resources */,
 				C623B87327D88C5600E027AE /* Main.storyboard in Resources */,
 				C6D01B0727DC43AA009D52BA /* lego in Resources */,
+				4153D62927E5117800813426 /* hotdog in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

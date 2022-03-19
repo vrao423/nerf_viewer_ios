@@ -24,8 +24,8 @@ class NeRFNode: SCNNode {
     
     // Create a plane geometry with width * height vertices.
     let plane = SCNPlane(width: CGFloat(width), height: CGFloat(height));
-    plane.widthSegmentCount = Int(width);
-    plane.heightSegmentCount = Int(height);
+//    plane.widthSegmentCount = Int(width);
+//    plane.heightSegmentCount = Int(height);
     self.geometry = plane;
     
     let program = SCNProgram()
@@ -40,7 +40,7 @@ class NeRFNode: SCNNode {
     var vertexConstants = VertexConstants(blit_transform: float4x4(blitTransform))
     
     
-    guard let dataLoader = DataLoader(name: "lego", device: device) else {
+    guard let dataLoader = DataLoader(name: "chair", device: device) else {
       return
     }
 
